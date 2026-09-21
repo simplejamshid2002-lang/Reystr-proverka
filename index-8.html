@@ -1,0 +1,947 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#123B36">
+<title>RKL tekshirish yordamchisi</title>
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<style>
+  :root{
+    --bg:#EEF2F1;
+    --card:#ffffff;
+    --ink:#132420;
+    --ink-soft:#5C6B67;
+    --line:#D7E0DD;
+    --teal:#123B36;
+    --teal-deep:#0B2622;
+    --amber:#C08A2E;
+    --amber-soft:#F3E6CC;
+    --amber-ink:#6b501e;
+    --danger:#9B3B34;
+    --danger-bg:#F7E9E7;
+    --ok:#2E6B4F;
+    --ok-bg:#E7F2EC;
+  }
+  html[data-theme="dark"]{
+    --bg:#0E1917;
+    --card:#16241F;
+    --ink:#E7EFEC;
+    --ink-soft:#93A6A0;
+    --line:#25362F;
+    --teal:#1B4A41;
+    --teal-deep:#0B1F1B;
+    --amber:#D9A64E;
+    --amber-soft:#332A14;
+    --amber-ink:#E8C878;
+    --danger:#E58179;
+    --danger-bg:#3A1E1C;
+    --ok:#7FD9AC;
+    --ok-bg:#123227;
+  }
+  html[data-theme="dark"] body{background:var(--bg);}
+  html[data-theme="dark"] .reminder-box input[type="date"]{
+    background:#1C2B26; color:var(--ink); border-color:var(--line);
+    color-scheme: dark;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--ink);
+    font-family:'Inter', -apple-system, Segoe UI, sans-serif;
+    line-height:1.5;
+    -webkit-tap-highlight-color:transparent;
+  }
+  .wrap{max-width:640px;margin:0 auto;padding:0 0 48px;}
+
+  header{
+    position:sticky; top:0; z-index:20;
+    background:var(--teal); color:#fff;
+    padding:16px 18px 14px;
+  }
+  .top-row{display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;}
+  .brand{display:flex; align-items:center; gap:10px;}
+  .brand .seal{
+    width:34px;height:34px;border-radius:50%;
+    border:2px solid var(--amber);
+    display:flex;align-items:center;justify-content:center;
+    font-size:11px;font-weight:800;color:var(--amber);flex-shrink:0;
+  }
+  .brand h1{font-size:16.5px; font-weight:800; margin:0; letter-spacing:-0.2px;}
+  .lang-toggle{display:flex;border:1px solid rgba(255,255,255,0.35);border-radius:6px;overflow:hidden;flex-shrink:0;}
+  .lang-toggle button{border:none;background:transparent;color:#fff;padding:6px 10px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;}
+  .lang-toggle button.active{background:var(--amber);color:var(--teal-deep);}
+  .top-controls{display:flex; align-items:center; gap:8px; flex-shrink:0;}
+  .theme-toggle{
+    flex-shrink:0; width:32px; height:32px; border-radius:8px;
+    border:1px solid rgba(255,255,255,0.35); background:transparent;
+    color:#fff; cursor:pointer; display:flex; align-items:center; justify-content:center;
+  }
+  .theme-toggle svg{width:17px; height:17px;}
+  .theme-toggle .icon-moon{display:none;}
+  html[data-theme="dark"] .theme-toggle .icon-sun{display:none;}
+  html[data-theme="dark"] .theme-toggle .icon-moon{display:block;}
+
+  .chipbar{display:flex; gap:8px; overflow-x:auto; padding-bottom:2px; scrollbar-width:none;}
+  .chipbar::-webkit-scrollbar{display:none;}
+  .chip{
+    flex-shrink:0; background:rgba(255,255,255,0.12); color:#fff;
+    border:1px solid rgba(255,255,255,0.25); border-radius:999px;
+    padding:8px 16px; font-size:13px; font-weight:700; white-space:nowrap; cursor:pointer;
+  }
+
+  main{padding:18px 16px 0;}
+
+  .hero-notice{
+    background:var(--danger-bg); border:1px solid #e3cac7; border-radius:10px;
+    padding:14px 15px; font-size:13.5px; color:var(--danger); margin-bottom:16px;
+  }
+  .hero-notice strong{display:block; margin-bottom:3px; font-size:14px;}
+
+  .subtitle{color:var(--ink-soft); font-size:14px; margin:0 0 18px;}
+
+  /* Main function accordion */
+  .fn-item{
+    background:var(--card); border:1px solid var(--line); border-radius:14px;
+    margin-bottom:12px; overflow:hidden;
+  }
+  .fn-head{
+    display:flex; align-items:center; gap:13px; padding:16px;
+    cursor:pointer; user-select:none;
+  }
+  .fn-icon{
+    flex-shrink:0; width:38px; height:38px; border-radius:11px;
+    background:var(--teal); color:#fff; display:flex; align-items:center; justify-content:center;
+  }
+  .fn-icon svg{width:20px; height:20px;}
+  .fn-title{flex:1;}
+  .fn-title .t1{font-weight:800; font-size:16px; color:var(--teal-deep); display:block;}
+  .fn-title .t2{font-size:12.5px; color:var(--ink-soft); display:block; margin-top:1px;}
+  .fn-chevron{flex-shrink:0; width:20px; height:20px; color:var(--ink-soft); transition:transform 0.2s ease;}
+  .fn-item.open .fn-chevron{transform:rotate(180deg);}
+  .fn-body{max-height:0; overflow:hidden; transition:max-height 0.25s ease;}
+  .fn-item.open .fn-body{border-top:1px solid var(--line);}
+  .fn-body-inner{padding:6px 16px 16px;}
+
+  /* Sub-sections inside a function */
+  .sub{margin-top:16px;}
+  .sub:first-child{margin-top:14px;}
+  .sub-label{
+    font-weight:800; font-size:12.5px; text-transform:uppercase; letter-spacing:0.04em;
+    color:var(--amber); margin:0 0 10px;
+  }
+
+  .link-card{
+    background:var(--bg); border:1px solid var(--line); border-radius:10px;
+    padding:13px 14px; margin-bottom:10px;
+  }
+  .link-card .site{font-size:12px; color:var(--ink-soft); margin-bottom:2px;}
+  .link-card .name{font-weight:700; font-size:14px; margin-bottom:9px; color:var(--ink);}
+  .link-card a{
+    display:inline-block; background:var(--teal); color:#fff; text-decoration:none;
+    padding:8px 14px; border-radius:7px; font-size:13.5px; font-weight:700;
+  }
+  .link-actions{display:flex; gap:8px; flex-wrap:wrap; margin-top:9px;}
+  .link-actions a{
+    display:inline-flex; align-items:center; gap:5px;
+    background:var(--card); color:var(--teal); text-decoration:none;
+    border:1px solid var(--line);
+    padding:7px 12px; border-radius:7px; font-size:12.5px; font-weight:700;
+  }
+  .link-actions a.map-btn{background:var(--teal); color:#fff; border-color:var(--teal);}
+  .embassy-group{font-weight:800; font-size:13px; color:var(--teal-deep); margin:14px 0 8px;}
+  .embassy-group:first-child{margin-top:0;}
+
+  .step{display:flex; gap:11px; margin-bottom:12px;}
+  .step:last-child{margin-bottom:0;}
+  .step-dot{
+    flex-shrink:0; width:22px; height:22px; border-radius:50%;
+    background:var(--amber-soft); color:var(--amber); font-weight:800; font-size:11.5px;
+    display:flex; align-items:center; justify-content:center; margin-top:1px;
+  }
+  .step-body p{margin:0 0 3px; font-size:13.5px;}
+  .step-body .hint{font-size:12px; color:var(--ink-soft); margin:0;}
+
+  .result-row{display:flex; gap:10px; border-radius:8px; padding:12px 13px; margin-bottom:8px; font-size:13px;}
+  .result-row.ok{background:var(--ok-bg); color:var(--ok);}
+  .result-row.bad{background:var(--danger-bg); color:var(--danger);}
+  .result-row .tag{font-weight:800; flex-shrink:0;}
+
+  .mini-notice{
+    background:var(--amber-soft); color:var(--amber-ink); border-radius:8px;
+    padding:11px 13px; font-size:13px; margin-bottom:4px;
+  }
+
+  /* Patent reminder widget */
+  .reminder-box{
+    background:var(--bg); border:1px solid var(--line); border-radius:12px;
+    padding:14px; margin-bottom:6px;
+  }
+  .reminder-box input[type="date"]{
+    width:100%; padding:10px 12px; border-radius:8px; border:1px solid var(--line);
+    font-size:14px; font-family:inherit; margin-bottom:10px; background:#fff; color:var(--ink);
+  }
+  .reminder-box button{
+    width:100%; background:var(--teal); color:#fff; border:none; border-radius:8px;
+    padding:11px; font-size:14px; font-weight:700; cursor:pointer; font-family:inherit;
+  }
+  .reminder-status{
+    display:none; border-radius:10px; padding:12px 13px; margin-bottom:10px; font-size:13.5px; font-weight:600;
+  }
+  .reminder-status.ok{display:block; background:var(--ok-bg); color:var(--ok);}
+  .reminder-status.warn{display:block; background:var(--amber-soft); color:var(--amber-ink);}
+  .reminder-status.bad{display:block; background:var(--danger-bg); color:var(--danger);}
+  .reminder-status .clear-link{display:block; margin-top:6px; font-size:12px; font-weight:700; text-decoration:underline; cursor:pointer;}
+
+  /* nested FAQ accordion */
+  .faq-q{
+    display:flex; justify-content:space-between; align-items:center; gap:8px;
+    padding:11px 0; border-bottom:1px solid var(--line); cursor:pointer;
+    font-weight:700; font-size:13.5px;
+  }
+  .faq-item:last-child .faq-q{border-bottom:none;}
+  .faq-chevron{width:16px; height:16px; flex-shrink:0; color:var(--ink-soft); transition:transform 0.2s ease;}
+  .faq-item.open .faq-chevron{transform:rotate(180deg);}
+  .faq-a{max-height:0; overflow:hidden; transition:max-height 0.2s ease;}
+  .faq-a p{font-size:13px; color:var(--ink-soft); margin:0 0 11px; padding-top:2px;}
+
+  .install-bar{
+    display:none; background:var(--teal-deep); color:#fff; border-radius:10px;
+    padding:12px 14px; align-items:center; justify-content:space-between; gap:10px;
+    margin:14px 0; font-size:13px;
+  }
+  .install-bar button{background:var(--amber); color:var(--teal-deep); border:none; border-radius:6px; padding:8px 14px; font-size:12.5px; font-weight:800; cursor:pointer; flex-shrink:0;}
+
+  footer{font-size:11.5px; color:var(--ink-soft); text-align:center; margin-top:22px; padding:0 8px;}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="top-row">
+      <div class="brand">
+        <div class="seal">РФ</div>
+        <h1 data-uz="RKL tekshirish" data-ru="Проверка РКЛ" data-tj="Санҷиши RKL">RKL tekshirish</h1>
+      </div>
+      <div class="top-controls">
+        <button class="theme-toggle" id="theme-toggle-btn" aria-label="theme">
+          <svg class="icon-sun" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="4" stroke="currentColor" stroke-width="1.8"/><path d="M12 2v2M12 20v2M4.2 4.2l1.4 1.4M18.4 18.4l1.4 1.4M2 12h2M20 12h2M4.2 19.8l1.4-1.4M18.4 5.6l1.4-1.4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+          <svg class="icon-moon" viewBox="0 0 24 24" fill="none"><path d="M20 14.5A8.5 8.5 0 019.5 4 8.5 8.5 0 1020 14.5z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
+        </button>
+        <div class="lang-toggle">
+          <button id="btn-uz" class="active">UZ</button>
+          <button id="btn-ru">RU</button>
+          <button id="btn-tj">TJ</button>
+        </div>
+      </div>
+    </div>
+    <div class="chipbar" id="chipbar">
+      <div class="chip" data-target="fn-1" data-uz="1. Reestr tekshirish" data-ru="1. Проверка реестра" data-tj="1. Санҷиши реестр">1. Reestr tekshirish</div>
+      <div class="chip" data-target="fn-2" data-uz="2. Kirish taqig'i" data-ru="2. Запрет на въезд" data-tj="2. Манъи вуруд">2. Kirish taqig'i</div>
+      <div class="chip" data-target="fn-3" data-uz="3. INN va SNILS" data-ru="3. ИНН и СНИЛС" data-tj="3. ИНН ва СНИЛС">3. INN va SNILS</div>
+      <div class="chip" data-target="fn-4" data-uz="4. Patent to'lovi" data-ru="4. Оплата патента" data-tj="4. Пардохти патент">4. Patent to'lovi</div>
+      <div class="chip" data-target="fn-5" data-uz="5. Mehnat huquqlari" data-ru="5. Трудовые права" data-tj="5. Ҳуқуқҳои меҳнатӣ">5. Mehnat huquqlari</div>
+      <div class="chip" data-target="fn-6" data-uz="6. Ish haqida xabar berish" data-ru="6. Уведомление о работе" data-tj="6. Огоҳинома дар бораи кор">6. Ish haqida xabar berish</div>
+      <div class="chip" data-target="fn-info" data-uz="Qo'shimcha" data-ru="Доп. инфо" data-tj="Иловагӣ">Qo'shimcha</div>
+    </div>
+  </header>
+
+  <main>
+    <p class="subtitle" data-uz="Rossiyada bo'lgan chet elliklar uchun 6 ta asosiy funksiya va qo'shimcha ma'lumot. Kerakli bo'limni bosing." data-ru="6 основных функций для иностранцев в России и дополнительная информация. Нажмите на нужный раздел." data-tj="Барои хориҷиёне, ки дар Русия ҳастанд, 6 функсияи асосӣ ва маълумоти иловагӣ. Бахши лозимаро пахш кунед.">Rossiyada bo'lgan chet elliklar uchun 6 ta asosiy funksiya va qo'shimcha ma'lumot. Kerakli bo'limni bosing.</p>
+
+    <div class="install-bar" id="install-bar">
+      <span data-uz="Ilovani telefoningizga o'rnating" data-ru="Установите приложение на телефон" data-tj="Замимаро ба телефони худ насб кунед">Ilovani telefoningizga o'rnating</span>
+      <button id="install-btn" data-uz="O'rnatish" data-ru="Установить" data-tj="Насб кардан">O'rnatish</button>
+    </div>
+
+    <!-- FUNCTION 1: REESTR CHECK -->
+    <div class="fn-item open" id="fn-1">
+      <div class="fn-head">
+        <div class="fn-icon"><svg viewBox="0 0 24 24" fill="none"><path d="M9 12l2 2 4-4M12 3l7 3v6c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6l7-3z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div class="fn-title">
+          <span class="t1" data-uz="Reestr tekshirish" data-ru="Проверка реестра" data-tj="Санҷиши реестр">Reestr tekshirish</span>
+          <span class="t2" data-uz="Nazoratdagi shaxslar reestrida (RKL) borligingizni tekshiring" data-ru="Проверьте, есть ли вы в реестре контролируемых лиц" data-tj="Ҳастии худро дар реестри шахсони таҳти назорат (RKL) санҷед">Nazoratdagi shaxslar reestrida (RKL) borligingizni tekshiring</span>
+        </div>
+        <svg class="fn-chevron" viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      </div>
+      <div class="fn-body">
+        <div class="fn-body-inner">
+
+          <div class="hero-notice">
+            <strong data-uz="Muhim" data-ru="Важно" data-tj="Муҳим">Muhim</strong>
+            <span data-uz="Reestr ma'lumotlari faqat MVD ning yopiq davlat bazasida saqlanadi. Bu ilova bazaga to'g'ridan-to'g'ri kira olmaydi — faqat rasmiy manbalarga olib boradi." data-ru="Данные реестра хранятся только в закрытой базе МВД. Это приложение не имеет прямого доступа — только ссылки на официальные источники." data-tj="Маълумоти реестр танҳо дар пойгоҳи бастаи давлатии ВКД нигоҳ дошта мешавад. Ин замима бевосита ба пойгоҳ дастрасӣ надорад — танҳо ба манбаъҳои расмӣ мебарад.">Reestr ma'lumotlari faqat MVD ning yopiq davlat bazasida saqlanadi. Bu ilova bazaga to'g'ridan-to'g'ri kira olmaydi — faqat rasmiy manbalarga olib boradi.</span>
+          </div>
+
+          <div class="sub">
+            <p class="sub-label" data-uz="Rasmiy havolalar" data-ru="Официальные ссылки" data-tj="Пайвандҳои расмӣ">Rasmiy havolalar</p>
+            <div class="link-card">
+              <div class="site">мвд.рф</div>
+              <div class="name" data-uz="MVD Rossiya rasmiy xizmati" data-ru="Официальный сервис МВД России" data-tj="Хидмати расмии ВКД Русия">MVD Rossiya rasmiy xizmati</div>
+              <a href="https://мвд.рф/rkl" target="_blank" rel="noopener">мвд.рф/rkl →</a>
+            </div>
+            <div class="link-card">
+              <div class="site">gosuslugi.ru</div>
+              <div class="name" data-uz="Davlat xizmatlari portali" data-ru="Портал госуслуг" data-tj="Портали хидматҳои давлатӣ">Davlat xizmatlari portali</div>
+              <a href="https://www.gosuslugi.ru/655781/1/form" target="_blank" rel="noopener">gosuslugi.ru →</a>
+            </div>
+            <p class="hint" data-uz="Ma'lumotlar har 4 soatda yangilanadi" data-ru="Данные обновляются каждые 4 часа" data-tj="Маълумот ҳар 4 соат нав карда мешавад">Ma'lumotlar har 4 soatda yangilanadi</p>
+          </div>
+
+          <div class="sub">
+            <p class="sub-label" data-uz="Qanday tekshirish kerak" data-ru="Как проверить" data-tj="Чӣ тавр санҷидан лозим">Qanday tekshirish kerak</p>
+            <div class="step"><div class="step-dot">1</div><div class="step-body"><p data-uz="Yuqoridagi havolalardan birini oching" data-ru="Откройте одну из ссылок выше" data-tj="Яке аз пайвандҳои болоро кушоед">Yuqoridagi havolalardan birini oching</p></div></div>
+            <div class="step"><div class="step-dot">2</div><div class="step-body"><p data-uz="F.I.O va tug'ilgan sanani kiriting" data-ru="Введите ФИО и дату рождения" data-tj="Ному насаб ва санаи таваллудро ворид кунед">F.I.O va tug'ilgan sanani kiriting</p></div></div>
+            <div class="mini-notice" style="margin-top:-4px;">
+              <strong style="display:block; margin-bottom:4px;" data-uz="Qaysi yozuvda kiritish kerak?" data-ru="В каком написании вводить?" data-tj="Бо кадом хат ворид кардан лозим?">Qaysi yozuvda kiritish kerak?</strong>
+              <span data-uz="Faqat KIRILL harflarida yozing (masalan: Жамшидбек, Мамараимов). O'zbekiston pasportingizda ism lotin harflarida yozilgan bo'lsa ham, MVD/Gosuslugi tizimlarida FAQAT kirill imlosi ishlaydi." data-ru="Пишите ТОЛЬКО кириллицей (например: Жамшидбек, Мамараимов). Даже если в узбекском паспорте имя латиницей, системы МВД/Госуслуг работают ТОЛЬКО с кириллицей." data-tj="Танҳо бо ҳарфҳои КИРИЛЛӢ нависед (масалан: Ҷамшидбек, Мамараимов). Агар дар шиноснома номатон бо ҳарфҳои лотинӣ навишта шуда бошад ҳам, дар низомҳои ВКД/Госуслуги ТАНҲО имлои кириллӣ кор мекунад.">Faqat KIRILL harflarida yozing (masalan: Жамшидбек, Мамараимов). O'zbekiston pasportingizda ism lotin harflarida yozilgan bo'lsa ham, MVD/Gosuslugi tizimlarida FAQAT kirill imlosi ishlaydi.</span>
+            </div>
+            <div class="step"><div class="step-dot">3</div><div class="step-body"><p data-uz="Kirill yozuvini qayerdan olish kerak" data-ru="Откуда взять кириллическое написание" data-tj="Имлои кириллиро аз куҷо гирифтан лозим">Kirill yozuvini qayerdan olish kerak</p><p class="hint" data-uz="Pasportingizni o'zingiz translit qilmang — patentingizda, migratsion kartangizda yoki notarial tasdiqlangan rus tiliga tarjimangizda yozilgan aynan shu imlodan foydalaning" data-ru="Не переводите паспорт самостоятельно — используйте написание из патента, миграционной карты или нотариально заверенного перевода на русский" data-tj="Шиноснномаи худро худатон транслит накунед — маҳз ҳамон имлоеро истифода баред, ки дар патент, кортаи муҳоҷират ё тарҷумаи бо тартиби нотариалӣ тасдиқшудаи русиатон навишта шудааст">Pasportingizni o'zingiz translit qilmang — patentingizda, migratsion kartangizda yoki notarial tasdiqlangan rus tiliga tarjimangizda yozilgan aynan shu imlodan foydalaning</p></div></div>
+            <div class="step"><div class="step-dot">4</div><div class="step-body"><p data-uz="Tug'ilgan sanani hujjatdagidek kiriting" data-ru="Введите дату рождения точно как в документе" data-tj="Санаи таваллудро тавре ки дар ҳуҷҷат аст, ворид кунед">Tug'ilgan sanani hujjatdagidek kiriting</p></div></div>
+            <div class="step"><div class="step-dot">5</div><div class="step-body"><p data-uz="Natijani ko'ring — darhol chiqadi" data-ru="Посмотрите результат — он появится сразу" data-tj="Натиҷаро бинед — фавран пайдо мешавад">Natijani ko'ring — darhol chiqadi</p></div></div>
+          </div>
+
+          <div class="sub">
+            <p class="sub-label" data-uz="Natija nimani anglatadi" data-ru="Что означает результат" data-tj="Натиҷа чиро мефаҳмонад">Natija nimani anglatadi</p>
+            <div class="result-row ok"><div class="tag" data-uz="Topilmadi" data-ru="Не найдено" data-tj="Ёфт нашуд">Topilmadi</div><div data-uz="Siz reestrda emassiz — bu yaxshi belgi" data-ru="Вас нет в реестре — это хороший знак" data-tj="Шумо дар реестр нестед — ин аломати хуб аст">Siz reestrda emassiz — bu yaxshi belgi</div></div>
+            <div class="result-row bad"><div class="tag" data-uz="Topildi" data-ru="Найдено" data-tj="Ёфт шуд">Topildi</div><div data-uz="Siz reestrdasiz — pastga qarang" data-ru="Вы в реестре — см. ниже" data-tj="Шумо дар реестр ҳастед — ба поён нигаред">Siz reestrdasiz — pastga qarang</div></div>
+          </div>
+
+          <div class="sub">
+            <p class="sub-label" data-uz="Agar reestrda chiqsangiz" data-ru="Если вы в реестре" data-tj="Агар дар реестр баромадед">Agar reestrda chiqsangiz</p>
+            <div class="step"><div class="step-dot">1</div><div class="step-body"><p data-uz="Ro'yxatdan o'tgan joyingizdagi MVD migratsiya bo'limiga boring" data-ru="Обратитесь в местное подразделение МВД по вопросам миграции" data-tj="Ба шӯъбаи муҳоҷирати ВКД дар ҷои ба қайд гирифта шудаатон равед">Ro'yxatdan o'tgan joyingizdagi MVD migratsiya bo'limiga boring</p></div></div>
+            <div class="step"><div class="step-dot">2</div><div class="step-body"><p data-uz="Sabab so'rang: hujjat muddati, hisobga qo'yilmagan, xatolik va h.k." data-ru="Уточните причину: истёк срок, нет учёта, ошибка и т.д." data-tj="Сабабро пурсед: мӯҳлати ҳуҷҷат, ба ҳисоб гирифта нашудан, хато ва ғайра">Sabab so'rang: hujjat muddati, hisobga qo'yilmagan, xatolik va h.k.</p></div></div>
+            <div class="step"><div class="step-dot">3</div><div class="step-body"><p data-uz="Holatingizni tasdiqlaydigan hujjatlarni tayyorlang" data-ru="Подготовьте подтверждающие документы" data-tj="Ҳуҷҷатҳои вазъи худро тасдиқкунандаро омода кунед">Holatingizni tasdiqlaydigan hujjatlarni tayyorlang</p></div></div>
+            <div class="step"><div class="step-dot">4</div><div class="step-body"><p data-uz="Reestrdan chiqarish uchun rasmiy ariza yozing" data-ru="Напишите заявление на исключение из реестра" data-tj="Барои аз реестр баровардан ариза нависед">Reestrdan chiqarish uchun rasmiy ariza yozing</p></div></div>
+          </div>
+
+          <div class="sub">
+            <p class="sub-label" data-uz="Mahalliy MVD bo'limi" data-ru="Местное отделение МВД" data-tj="Шӯъбаи маҳаллии ВКД">Mahalliy MVD bo'limi</p>
+            <div class="step"><div class="step-dot">1</div><div class="step-body"><p data-uz="Gosuslugi'da 'Подразделение по вопросам миграции' xizmatini oching" data-ru="Откройте услугу «Подразделение по вопросам миграции» на Госуслугах" data-tj="Дар Госуслуги хидмати «Подразделение по вопросам миграции»-ро кушоед">Gosuslugi'da 'Подразделение по вопросам миграции' xizmatini oching</p></div></div>
+            <div class="step"><div class="step-dot">2</div><div class="step-body"><p data-uz="Yoki mintaqangiz sayti: [raqam].мвд.рф (Moskva — 77.мвд.рф)" data-ru="Либо сайт региона: [номер].мвд.рф (Москва — 77.мвд.рф)" data-tj="Ё сомонаи минтақаи шумо: [рақам].мвд.рф (Маскав — 77.мвд.рф)">Yoki mintaqangiz sayti: [raqam].мвд.рф (Moskva — 77.мвд.рф)</p></div></div>
+          </div>
+
+          <div class="sub">
+            <p class="sub-label" data-uz="Savol-javoblar" data-ru="Вопросы и ответы" data-tj="Саволу ҷавобҳо">Savol-javoblar</p>
+            <div class="faq-item">
+              <div class="faq-q"><span data-uz="Natija chiqmayapti yoki xato beryapti" data-ru="Результат не отображается или ошибка" data-tj="Натиҷа намебарояд ё хато медиҳад">Natija chiqmayapti yoki xato beryapti</span><svg class="faq-chevron" viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></div>
+              <div class="faq-a"><p data-uz="F.I.O yozilishini tekshiring — transliteratsiya farqi ko'pincha xatoga sabab bo'ladi. Ikkala saytda ham sinab ko'ring." data-ru="Проверьте написание ФИО — разница в транслитерации часто вызывает ошибку. Попробуйте оба сайта." data-tj="Навишти ному насабро санҷед — фарқи транслитератсия аксар вақт сабаби хато мешавад. Дар ҳар ду сомона санҷед.">F.I.O yozilishini tekshiring — transliteratsiya farqi ko'pincha xatoga sabab bo'ladi. Ikkala saytda ham sinab ko'ring.</p></div>
+            </div>
+            <div class="faq-item">
+              <div class="faq-q"><span data-uz="Karta bloklandi, lekin reestrda yo'qman" data-ru="Карта заблокирована, но меня нет в реестре" data-tj="Корт блок шуд, лекин ман дар реестр нестам">Karta bloklandi, lekin reestrda yo'qman</span><svg class="faq-chevron" viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></div>
+              <div class="faq-a"><p data-uz="Bank ma'lumoti kechikishi mumkin. Natijani skrinshot qilib, MVD bo'limi va bankka murojaat qiling." data-ru="Данные банка могут запаздывать. Сделайте скриншот результата и обратитесь в МВД и банк." data-tj="Маълумоти бонк метавонад дер шавад. Аз натиҷа скриншот гирифта, ба шӯъбаи ВКД ва бонк муроҷиат кунед.">Bank ma'lumoti kechikishi mumkin. Natijani skrinshot qilib, MVD bo'limi va bankka murojaat qiling.</p></div>
+            </div>
+            <div class="faq-item">
+              <div class="faq-q"><span data-uz="Pasport yoki INN raqami bo'yicha tekshirsam bo'ladimi" data-ru="Можно проверить по паспорту или ИНН?" data-tj="Оё бо рақами шиносномa ё ИНН санҷидан мумкин аст">Pasport yoki INN raqami bo'yicha tekshirsam bo'ladimi</span><svg class="faq-chevron" viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></div>
+              <div class="faq-a"><p data-uz="Yo'q, rasmiy shakl faqat F.I.O va tug'ilgan sana bo'yicha ishlaydi." data-ru="Нет, официальная форма работает только по ФИО и дате рождения." data-tj="Не, шакли расмӣ танҳо бо ному насаб ва санаи таваллуд кор мекунад.">Yo'q, rasmiy shakl faqat F.I.O va tug'ilgan sana bo'yicha ishlaydi.</p></div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- FUNCTION 2: INN -->
+    <!-- FUNCTION 2: ENTRY BAN CHECK -->
+    <div class="fn-item" id="fn-2">
+      <div class="fn-head">
+        <div class="fn-icon"><svg viewBox="0 0 24 24" fill="none"><path d="M12 3l8 4v5c0 4.5-3.2 7.7-8 9-4.8-1.3-8-4.5-8-9V7l8-4z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M9 9l6 6M15 9l-6 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></div>
+        <div class="fn-title">
+          <span class="t1" data-uz="Kirish taqig'ini tekshirish" data-ru="Проверка запрета на въезд" data-tj="Санҷиши манъи вуруд">Kirish taqig'ini tekshirish</span>
+          <span class="t2" data-uz="Rossiyaga kirishga taqiq qo'yilmaganini tekshiring" data-ru="Проверьте, не закрыт ли вам въезд в Россию" data-tj="Санҷед, ки вуруд ба Русия манъ карда нашудааст">Rossiyaga kirishga taqiq qo'yilmaganini tekshiring</span>
+        </div>
+        <svg class="fn-chevron" viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      </div>
+      <div class="fn-body">
+        <div class="fn-body-inner">
+          <div class="hero-notice">
+            <strong data-uz="Bu — RKL'dan boshqa, alohida tekshiruv" data-ru="Это отдельная проверка, не РКЛ" data-tj="Ин санҷиши алоҳида аст, на RKL">Bu — RKL'dan boshqa, alohida tekshiruv</strong>
+            <span data-uz="RKL'da bo'lmasligingiz kirish taqig'i yo'qligini kafolatlamaydi — bular ikki xil, mustaqil ro'yxat. Ikkalasini ham alohida tekshiring." data-ru="Отсутствие в РКЛ не гарантирует отсутствие запрета на въезд — это два разных, независимых реестра. Проверяйте оба отдельно." data-tj="Дар RKL набудан набудани манъи вурудро кафолат намедиҳад — инҳо ду феҳристи гуногун ва мустақил мебошанд. Ҳар дуро алоҳида санҷед.">RKL'da bo'lmasligingiz kirish taqig'i yo'qligini kafolatlamaydi — bular ikki xil, mustaqil ro'yxat. Ikkalasini ham alohida tekshiring.</span>
+          </div>
+
+          <div class="sub">
+            <p class="sub-label" data-uz="Rasmiy tekshiruv" data-ru="Официальная проверка" data-tj="Санҷиши расмӣ">Rasmiy tekshiruv</p>
+            <div class="link-card">
+              <div class="site">мвд.рф</div>
+              <div class="name" data-uz="MVD GUVM rasmiy xizmati" data-ru="Официальный сервис ГУВМ МВД" data-tj="Хидмати расмии ГУВМ ВКД">MVD GUVM rasmiy xizmati</div>
+              <a href="http://мвд.рф/сервисы-гувм/info-service.htm?sid=3000" target="_blank" rel="noopener">мвд.рф →</a>
+            </div>
+          </div>
+
+          <div class="sub">
+            <p class="sub-label" data-uz="Qanday tekshirish kerak" data-ru="Как проверить" data-tj="Чӣ тавр санҷидан лозим">Qanday tekshirish kerak</p>
+            <div class="step"><div class="step-dot">1</div><div class="step-body"><p data-uz="Familiya va ismni kiriting — lotin harflarida VA rus (kirill) harflarida, ikkalasi ham so'raladi" data-ru="Введите фамилию и имя — латиницей И на русском (кириллицей), требуются оба варианта" data-tj="Насаб ва номро ворид кунед — бо ҳарфҳои лотинӣ ВА русӣ (кириллӣ), ҳар ду лозиманд">Familiya va ismni kiriting — lotin harflarida VA rus (kirill) harflarida, ikkalasi ham so'raladi</p></div></div>
+            <div class="step"><div class="step-dot">2</div><div class="step-body"><p data-uz="Jinsi, tug'ilgan sana, fuqarolik (davlat)ni tanlang" data-ru="Укажите пол, дату рождения, гражданство" data-tj="Ҷинс, санаи таваллуд, шаҳрвандиро интихоб кунед">Jinsi, tug'ilgan sana, fuqarolik (davlat)ni tanlang</p></div></div>
+            <div class="step"><div class="step-dot">3</div><div class="step-body"><p data-uz="Hujjat turi (pasport), raqami va bergan davlatni kiriting" data-ru="Укажите тип документа (паспорт), номер и выдавшую страну" data-tj="Навъи ҳуҷҷат (шиноснома), рақам ва давлати додашударо ворид кунед">Hujjat turi (pasport), raqami va bergan davlatni kiriting</p></div></div>
+            <div class="step"><div class="step-dot">4</div><div class="step-body"><p data-uz="Rasmdagi kodni kiritib, natijani ko'ring" data-ru="Введите код с картинки и посмотрите результат" data-tj="Рамзи дар расмро ворид карда, натиҷаро бинед">Rasmdagi kodni kiritib, natijani ko'ring</p></div></div>
+          </div>
+
+          <div class="sub">
+            <p class="sub-label" data-uz="Diqqat qiling" data-ru="Обратите внимание" data-tj="Диққат кунед">Diqqat qiling</p>
+            <div class="mini-notice" data-uz="Bu — faqat ma'lumot xarakteridagi tekshiruv, rasmiy hujjat emas. Agar taqiq topilsa yoki chegarada muammo chiqsa, MVD'dan yozma rasmiy javob so'rang — bazalar bir necha haftagacha kechikishi mumkin." data-ru="Это только справочная проверка, не официальный документ. Если запрет найден или возникла проблема на границе, запросите письменный официальный ответ МВД — базы могут обновляться до нескольких недель." data-tj="Ин танҳо санҷиши иттилоотист, ҳуҷҷати расмӣ нест. Агар манъ ёфт шавад ё дар марз мушкилот пайдо шавад, аз ВКД ҷавоби хаттии расмӣ пурсед — пойгоҳҳо то якчанд ҳафта дер шуда метавонанд.">Bu — faqat ma'lumot xarakteridagi tekshiruv, rasmiy hujjat emas. Agar taqiq topilsa yoki chegarada muammo chiqsa, MVD'dan yozma rasmiy javob so'rang — bazalar bir necha haftagacha kechikishi mumkin.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="fn-item" id="fn-3">
+      <div class="fn-head">
+        <div class="fn-icon"><svg viewBox="0 0 24 24" fill="none"><path d="M4 6h16M4 12h16M4 18h10" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></div>
+        <div class="fn-title">
+          <span class="t1" data-uz="INN va SNILS" data-ru="ИНН и СНИЛС" data-tj="ИНН ва СНИЛС">INN va SNILS</span>
+          <span class="t2" data-uz="Ish uchun kerakli identifikatsiya raqamlari" data-ru="Идентификационные номера, необходимые для работы" data-tj="Рақамҳои шиносоии барои кор зарур">Ish uchun kerakli identifikatsiya raqamlari</span>
+        </div>
+        <svg class="fn-chevron" viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      </div>
+      <div class="fn-body">
+        <div class="fn-body-inner">
+          <div class="mini-notice" data-uz="INN — soliq to'lovchining identifikatsiya raqami. Ish beruvchi ko'pincha talab qiladi, patent to'lash uchun ham kerak bo'lishi mumkin." data-ru="ИНН — идентификационный номер налогоплательщика. Часто требуется работодателем, а также для оплаты патента." data-tj="ИНН — рақами шиносоии андозсупоранда мебошад. Корфармо аксар вақт талаб мекунад, барои пардохти патент низ лозим шуда метавонад.">INN — soliq to'lovchining identifikatsiya raqami. Ish beruvchi ko'pincha talab qiladi, patent to'lash uchun ham kerak bo'lishi mumkin.</div>
+
+          <div class="sub">
+            <p class="sub-label" data-uz="Mavjud INN'ni bilish" data-ru="Узнать присвоенный ИНН" data-tj="Донистани ИНН-и мавҷуда">Mavjud INN'ni bilish</p>
+            <div class="link-card">
+              <div class="site">service.nalog.ru</div>
+              <div class="name" data-uz="F.I.O va tug'ilgan sana bo'yicha mavjud INN'ni topib beradi" data-ru="Находит присвоенный ИНН по ФИО и дате рождения" data-tj="Бо ному насаб ва санаи таваллуд ИНН-и мавҷударо меёбад">F.I.O va tug'ilgan sana bo'yicha mavjud INN'ni topib beradi</div>
+              <a href="https://service.nalog.ru/inn.do" target="_blank" rel="noopener">service.nalog.ru/inn.do →</a>
+            </div>
+            <p class="hint" data-uz="F.I.O'ni faqat KIRILL harflarida kiriting — patent yoki notarial tarjimangizdagi imlo bo'yicha (pasportdagi lotin yozuvi bilan emas)" data-ru="Вводите ФИО ТОЛЬКО кириллицей — как в патенте или нотариальном переводе (не как в паспорте латиницей)" data-tj="Ному насабро танҳо бо ҳарфҳои КИРИЛЛӢ ворид кунед — тибқи имлои патент ё тарҷумаи нотариалиатон (на бо хати лотинии шиноснома)">F.I.O'ni faqat KIRILL harflarida kiriting — patent yoki notarial tarjimangizdagi imlo bo'yicha (pasportdagi lotin yozuvi bilan emas)</p>
+          </div>
+
+          <div class="sub">
+            <p class="sub-label" data-uz="Hali INN yo'q bo'lsa — olish" data-ru="Если ИНН ещё нет — получение" data-tj="Агар ҳанӯз ИНН набошад — гирифтан">Hali INN yo'q bo'lsa — olish</p>
+            <div class="step"><div class="step-dot">1</div><div class="step-body"><p data-uz="Yashash manzilingiz bo'yicha FNS (soliq inspeksiyasi) bo'limiga boring — bu faqat shaxsan amalga oshiriladi" data-ru="Обратитесь в отделение ФНС по адресу проживания — только лично" data-tj="Ба шӯъбаи ФНС (нозироти андоз) дар ҷои истиқомататон равед — ин танҳо шахсан анҷом дода мешавад">Yashash manzilingiz bo'yicha FNS (soliq inspeksiyasi) bo'limiga boring — bu faqat shaxsan amalga oshiriladi</p></div></div>
+            <div class="step"><div class="step-dot">2</div><div class="step-body"><p data-uz="Pasport + notarial tarjima, migratsion karta, ro'yxatdan o'tish hujjatini olib boring" data-ru="Возьмите паспорт с переводом, миграционную карту, документ о регистрации" data-tj="Шиноснома + тарҷумаи нотариалӣ, кортаи муҳоҷират, ҳуҷҷати ба қайдгириро бо худ баред">Pasport + notarial tarjima, migratsion karta, ro'yxatdan o'tish hujjatini olib boring</p><p class="hint" data-uz="Ba'zan ish beruvchi arizani o'zi topshiradi — avval so'rang" data-ru="Иногда заявление подаёт работодатель — уточните заранее" data-tj="Баъзан аризаро корфармо худаш месупорад — аввал пурсед">Ba'zan ish beruvchi arizani o'zi topshiradi — avval so'rang</p></div></div>
+            <div class="step"><div class="step-dot">3</div><div class="step-body"><p data-uz="Guvohnoma odatda 5 ish kunida tayyor bo'ladi, bepul" data-ru="Свидетельство готово обычно за 5 рабочих дней, бесплатно" data-tj="Гувоҳнома одатан дар 5 рӯзи корӣ омода мешавад, ройгон">Guvohnoma odatda 5 ish kunida tayyor bo'ladi, bepul</p></div></div>
+          </div>
+
+          <div class="sub" style="border-top:1px solid var(--line); padding-top:14px;">
+            <p class="sub-label" data-uz="SNILS — mavjudini bilish" data-ru="СНИЛС — узнать присвоенный" data-tj="СНИЛС — донистани мавҷуда">SNILS — mavjudini bilish</p>
+            <div class="mini-notice" data-uz="SNILS — 11 xonali sug'urta raqami, ish shartnomasi uchun majburiy. RKL/INN'dan farqli, buning uchun ochiq qidiruv xizmati yo'q." data-ru="СНИЛС — 11-значный страховой номер, обязателен для трудового договора. В отличие от РКЛ/ИНН, открытого сервиса поиска нет." data-tj="СНИЛС — рақами суғуртавии 11-рақама, барои шартномаи меҳнатӣ ҳатмист. Бар хилофи RKL/ИНН, хидмати ҷустуҷӯи кушод вуҷуд надорад.">SNILS — 11 xonali sug'urta raqami, ish shartnomasi uchun majburiy. RKL/INN'dan farqli, buning uchun ochiq qidiruv xizmati yo'q.</div>
+            <div class="step"><div class="step-dot">1</div><div class="step-body"><p data-uz="Eng tez yo'l — ish beruvchingizdan so'rang, nusxasi kadrlar bo'limida saqlanadi" data-ru="Самый быстрый способ — спросите у работодателя, копия хранится в отделе кадров" data-tj="Роҳи зудтарин — аз корфармоятон пурсед, нусха дар шӯъбаи кадрҳо нигоҳ дошта мешавад">Eng tez yo'l — ish beruvchingizdan so'rang, nusxasi kadrlar bo'limida saqlanadi</p></div></div>
+            <div class="step"><div class="step-dot">2</div><div class="step-body"><p data-uz="Yoki Gosuslugi shaxsiy kabinetingizda ko'ring (tasdiqlangan akkaunt bo'lsa)" data-ru="Либо посмотрите в личном кабинете на Госуслугах (если есть подтверждённая запись)" data-tj="Ё дар кабинети шахсии Госуслуги бинед (агар ҳисоби тасдиқшуда бошад)">Yoki Gosuslugi shaxsiy kabinetingizda ko'ring (tasdiqlangan akkaunt bo'lsa)</p></div></div>
+            <p class="hint" data-uz="Pulga &quot;topib beraman&quot; deydigan saytlarga ishonmang — bu firibgarlik" data-ru="Не доверяйте сайтам, обещающим найти его за деньги — это мошенничество" data-tj="Ба сомонаҳое, ки бо пул «ёфта медиҳам» мегӯянд, бовар накунед — ин фиреб аст">Pulga "topib beraman" deydigan saytlarga ishonmang — bu firibgarlik</p>
+          </div>
+
+          <div class="sub">
+            <p class="sub-label" data-uz="SNILS — hali yo'q bo'lsa" data-ru="СНИЛС — если ещё нет" data-tj="СНИЛС — агар ҳанӯз набошад">SNILS — hali yo'q bo'lsa</p>
+            <div class="step"><div class="step-dot">1</div><div class="step-body"><p data-uz="SFR (Ijtimoiy fond) bo'limiga yoki MFC'ga pasport bilan shaxsan boring, yoki ish beruvchi orqali rasmiylashtiring" data-ru="Обратитесь лично в СФР/МФЦ с паспортом, либо оформите через работодателя" data-tj="Шахсан ба СФР/МФЦ бо шиноснома муроҷиат кунед, ё тавассути корфармо расмият кунед">SFR (Ijtimoiy fond) bo'limiga yoki MFC'ga pasport bilan shaxsan boring, yoki ish beruvchi orqali rasmiylashtiring</p></div></div>
+            <div class="step"><div class="step-dot">2</div><div class="step-body"><p data-uz="Bildirishnoma qog'ozini oling va yo'qotmang — kelajakda kerak bo'ladi" data-ru="Получите уведомление и не теряйте — понадобится в будущем" data-tj="Огоҳиномаро гирифта, гум накунед — дар оянда лозим мешавад">Bildirishnoma qog'ozini oling va yo'qotmang — kelajakda kerak bo'ladi</p></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- FUNCTION 3: PATENT -->
+    <div class="fn-item" id="fn-4">
+      <div class="fn-head">
+        <div class="fn-icon"><svg viewBox="0 0 24 24" fill="none"><path d="M4 4h16v16H4V4zM8 9h8M8 13h5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></div>
+        <div class="fn-title">
+          <span class="t1" data-uz="Patent to'lovi" data-ru="Оплата патента" data-tj="Пардохти патент">Patent to'lovi</span>
+          <span class="t2" data-uz="Ishlash uchun patentni oylik to'lang" data-ru="Оплатите патент на работу ежемесячно" data-tj="Барои кор кардан патентро моҳона пардохт кунед">Ishlash uchun patentni oylik to'lang</span>
+        </div>
+        <svg class="fn-chevron" viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      </div>
+      <div class="fn-body">
+        <div class="fn-body-inner">
+          <div class="mini-notice" data-uz="Patent — ishlash uchun ruxsatnoma. Necha oyga to'lagan bo'lsangiz, o'sha muddat tugashiga qarab bekor bo'ladi. To'lov miqdori mintaqaga qarab har xil." data-ru="Патент — разрешение на работу. Действует до конца оплаченного периода. Сумма зависит от региона." data-tj="Патент — иҷозатнома барои кор кардан аст. Барои чанд моҳ пардохта бошед, бо анҷоми ҳамон мӯҳлат бекор мешавад. Маблағи пардохт вобаста ба минтақа гуногун аст.">Patent — ishlash uchun ruxsatnoma. Necha oyga to'lagan bo'lsangiz, o'sha muddat tugashiga qarab bekor bo'ladi. To'lov miqdori mintaqaga qarab har xil.</div>
+
+          <div class="sub">
+            <p class="sub-label" data-uz="Muddat eslatmasi" data-ru="Напоминание о сроке" data-tj="Ёдоварии мӯҳлат">Muddat eslatmasi</p>
+            <div id="reminder-status" class="reminder-status"></div>
+            <div class="reminder-box">
+              <p style="margin:0 0 6px; font-size:13px; color:var(--ink-soft);" data-uz="Oxirgi to'lovingiz qaysi sanagacha amal qiladi?" data-ru="До какой даты действует ваш последний платёж?" data-tj="Пардохти охиринатон то кадом сана амал мекунад?">Oxirgi to'lovingiz qaysi sanagacha amal qiladi?</p>
+              <p style="margin:0 0 10px; font-size:12px; color:var(--danger); font-weight:600;" data-uz="Diqqat: bu patentdagi 1 yillik muddat emas! Agar shu sanagacha to'lamasangiz, patent 1 yil tugamasdan oldin ham bekor bo'lib qoladi." data-ru="Внимание: это не годовой срок патента! Если не оплатите до этой даты, патент аннулируется раньше окончания года." data-tj="Диққат: ин мӯҳлати 1-солаи патент нест! Агар то ин сана пардохт накунед, патент пеш аз анҷоми 1 сол ҳам бекор мешавад.">Diqqat: bu patentdagi 1 yillik muddat emas! Agar shu sanagacha to'lamasangiz, patent 1 yil tugamasdan oldin ham bekor bo'lib qoladi.</p>
+              <input type="date" id="patent-date-input">
+              <button id="patent-save-btn" data-uz="Saqlash" data-ru="Сохранить" data-tj="Захира кардан">Saqlash</button>
+            </div>
+          </div>
+
+          <div class="sub">
+            <p class="sub-label" data-uz="Onlayn to'lash" data-ru="Оплата онлайн" data-tj="Пардохти онлайн">Onlayn to'lash</p>
+            <div class="link-card">
+              <div class="site">gosuslugi.ru</div>
+              <div class="name" data-uz="&quot;Chet elliklar uchun patent to'lovi&quot; xizmati" data-ru="Сервис «Оплата патента на работу для иностранцев»" data-tj="Хидмати «Пардохти патент барои хориҷиён»">"Chet elliklar uchun patent to'lovi" xizmati</div>
+              <a href="https://www.gosuslugi.ru" target="_blank" rel="noopener">gosuslugi.ru →</a>
+            </div>
+          </div>
+
+          <div class="sub">
+            <p class="sub-label" data-uz="Qanday to'lash kerak" data-ru="Как оплатить" data-tj="Чӣ тавр пардохт кардан лозим">Qanday to'lash kerak</p>
+            <div class="step"><div class="step-dot">1</div><div class="step-body"><p data-uz="Gosuslugi'ga tasdiqlangan akkaunt bilan kiring" data-ru="Войдите на Госуслуги с подтверждённой учётной записью" data-tj="Ба Госуслуги бо ҳисоби тасдиқшуда ворид шавед">Gosuslugi'ga tasdiqlangan akkaunt bilan kiring</p></div></div>
+            <div class="step"><div class="step-dot">2</div><div class="step-body"><p data-uz="Qidiruvdan &quot;Оплата патента на работу для иностранцев&quot; xizmatini toping" data-ru="Найдите через поиск услугу «Оплата патента на работу для иностранцев»" data-tj="Аз ҷустуҷӯ хидмати «Оплата патента на работу для иностранцев»-ро ёбед">Qidiruvdan "Оплата патента на работу для иностранцев" xizmatini toping</p></div></div>
+            <div class="step"><div class="step-dot">3</div><div class="step-body"><p data-uz="To'lov turini tanlang — birinchi yoki oylik" data-ru="Выберите тип платежа — первый или ежемесячный" data-tj="Навъи пардохтро интихоб кунед — аввалин ё моҳона">To'lov turini tanlang — birinchi yoki oylik</p></div></div>
+            <div class="step"><div class="step-dot">4</div><div class="step-body"><p data-uz="Necha oyga to'lashni tanlab, to'lovni amalga oshiring" data-ru="Выберите на сколько месяцев платить и внесите платёж" data-tj="Барои чанд моҳ пардохтанро интихоб карда, пардохтро анҷом диҳед">Necha oyga to'lashni tanlab, to'lovni amalga oshiring</p></div></div>
+            <div class="step"><div class="step-dot">5</div><div class="step-body"><p data-uz="Chekni yuklab, saqlab qo'ying — tekshiruvda kerak bo'lishi mumkin" data-ru="Скачайте и сохраните чек — может понадобиться при проверке" data-tj="Чекро боргирӣ карда, нигоҳ доред — дар санҷиш лозим шуда метавонад">Chekni yuklab, saqlab qo'ying — tekshiruvda kerak bo'lishi mumkin</p><p class="hint" data-uz="Bank/terminal orqali ham to'lash mumkin — patentdagi rekvizitlar bo'yicha" data-ru="Можно оплатить через банк/терминал — по реквизитам в патенте" data-tj="Тавассути бонк/терминал ҳам пардохтан мумкин аст — тибқи реквизитҳои дар патент">Bank/terminal orqali ham to'lash mumkin — patentdagi rekvizitlar bo'yicha</p></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- FUNCTION 5: LABOR RIGHTS -->
+    <div class="fn-item" id="fn-5">
+      <div class="fn-head">
+        <div class="fn-icon"><svg viewBox="0 0 24 24" fill="none"><path d="M12 3l2.5 5.5L20 9l-4 4 1 6-5-3-5 3 1-6-4-4 5.5-.5L12 3z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg></div>
+        <div class="fn-title">
+          <span class="t1" data-uz="Mehnat huquqlari" data-ru="Трудовые права" data-tj="Ҳуқуқҳои меҳнатӣ">Mehnat huquqlari</span>
+          <span class="t2" data-uz="Ish haqi to'lanmasa yoki huquq buzilsa, shikoyat qiling" data-ru="Если не платят зарплату или нарушают права — подайте жалобу" data-tj="Агар маош надиҳанд ё ҳуқуқ вайрон шавад — шикоят кунед">Ish haqi to'lanmasa yoki huquq buzilsa, shikoyat qiling</span>
+        </div>
+        <svg class="fn-chevron" viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      </div>
+      <div class="fn-body">
+        <div class="fn-body-inner">
+          <div class="mini-notice" data-uz="Ish beruvchi shartnoma tuzmasa, ish haqini kechiktirsa yoki boshqa huquqlaringizni buzsa — bu Rostrud (Mehnat inspeksiyasi)ning rasmiy vazifasi doirasiga kiradi." data-ru="Если работодатель не заключает договор, задерживает зарплату или иначе нарушает ваши права — это в компетенции Роструда (трудовой инспекции)." data-tj="Агар корфармо шартнома набандад, маошро дер кунад ё дигар ҳуқуқҳои шуморо вайрон кунад — ин дар салоҳияти Роструд (нозироти меҳнат) аст.">Ish beruvchi shartnoma tuzmasa, ish haqini kechiktirsa yoki boshqa huquqlaringizni buzsa — bu Rostrud (Mehnat inspeksiyasi)ning rasmiy vazifasi doirasiga kiradi.</div>
+
+          <div class="sub">
+            <p class="sub-label" data-uz="Onlayn shikoyat" data-ru="Онлайн-жалоба" data-tj="Шикояти онлайн">Onlayn shikoyat</p>
+            <div class="link-card">
+              <div class="site">онлайнинспекция.рф</div>
+              <div class="name" data-uz="Rostrud'ning rasmiy portali — shikoyat yuborish va maslahat olish" data-ru="Официальный портал Роструда — подача жалобы и консультация" data-tj="Портали расмии Роструд — фиристодани шикоят ва гирифтани машварат">Rostrud'ning rasmiy portali — shikoyat yuborish va maslahat olish</div>
+              <a href="https://онлайнинспекция.рф" target="_blank" rel="noopener">онлайнинспекция.рф →</a>
+            </div>
+          </div>
+
+          <div class="sub">
+            <p class="sub-label" data-uz="Qanday yuborish kerak" data-ru="Как подать" data-tj="Чӣ тавр фиристодан лозим">Qanday yuborish kerak</p>
+            <div class="step"><div class="step-dot">1</div><div class="step-body"><p data-uz="Saytda &quot;Сообщить о проблеме&quot; bo'limini bosing" data-ru="На сайте нажмите раздел «Сообщить о проблеме»" data-tj="Дар сомона бахши «Сообщить о проблеме»-ро пахш кунед">Saytda "Сообщить о проблеме" bo'limini bosing</p></div></div>
+            <div class="step"><div class="step-dot">2</div><div class="step-body"><p data-uz="Muammo turini tanlang (ish haqi, shartnoma, boshqa)" data-ru="Выберите тип проблемы (зарплата, договор, другое)" data-tj="Навъи мушкилотро интихоб кунед (маош, шартнома, дигар)">Muammo turini tanlang (ish haqi, shartnoma, boshqa)</p></div></div>
+            <div class="step"><div class="step-dot">3</div><div class="step-body"><p data-uz="Maqsadingizni tanlang — tekshiruv o'tkazish yoki maslahat olish" data-ru="Выберите цель — провести проверку или получить консультацию" data-tj="Мақсадатонро интихоб кунед — гузаронидани санҷиш ё гирифтани машварат">Maqsadingizni tanlang — tekshiruv o'tkazish yoki maslahat olish</p></div></div>
+            <div class="step"><div class="step-dot">4</div><div class="step-body"><p data-uz="Gosuslugi orqali kiring va arizani to'ldiring" data-ru="Войдите через Госуслуги и заполните заявление" data-tj="Тавассути Госуслуги ворид шавед ва аризаро пур кунед">Gosuslugi orqali kiring va arizani to'ldiring</p><p class="hint" data-uz="Xohlasangiz, ma'lumotlaringiz maxfiy saqlanishini so'rashingiz mumkin" data-ru="При желании можно попросить сохранить конфиденциальность данных" data-tj="Дар сурати хоҳиш, метавонед махфияти маълумотро дархост кунед">Xohlasangiz, ma'lumotlaringiz maxfiy saqlanishini so'rashingiz mumkin</p></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ADDITIONAL INFO (not a checkable function, just reference) -->
+    <!-- FUNCTION 6: MVD EMPLOYMENT NOTIFICATION -->
+    <div class="fn-item" id="fn-6">
+      <div class="fn-head">
+        <div class="fn-icon"><svg viewBox="0 0 24 24" fill="none"><path d="M4 4h16v16H4V4z" stroke="currentColor" stroke-width="1.8"/><path d="M8 9h8M8 13h5M8 17h8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></div>
+        <div class="fn-title">
+          <span class="t1" data-uz="Ish joyi haqida MVD'ga xabar berish" data-ru="Уведомление МВД о трудоустройстве" data-tj="Огоҳонии ВКД дар бораи ҷои кор">Ish joyi haqida MVD'ga xabar berish</span>
+          <span class="t2" data-uz="Patent 2 oyda bekor bo'lib qolmasligi uchun majburiy" data-ru="Обязательно, иначе патент аннулируется через 2 месяца" data-tj="Ҳатмист, вагарна патент баъди 2 моҳ бекор мешавад">Patent 2 oyda bekor bo'lib qolmasligi uchun majburiy</span>
+        </div>
+        <svg class="fn-chevron" viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      </div>
+      <div class="fn-body">
+        <div class="fn-body-inner">
+          <div class="hero-notice">
+            <strong data-uz="Juda muhim, ko'pchilik buni bilmaydi" data-ru="Очень важно, многие об этом не знают" data-tj="Хеле муҳим, бисёриҳо инро намедонанд">Juda muhim, ko'pchilik buni bilmaydi</strong>
+            <span data-uz="Patent bo'yicha ishlayotgan har bir chet ellik, patent BERILGAN kundan boshlab 2 OY ICHIDA, MVD'ga ish shartnomasi (yoki GPX shartnomasi) haqida xabarnoma topshirishi SHART. Bermasangiz — patent avtomatik bekor bo'ladi, garchi to'lovlaringiz vaqtida to'langan bo'lsa ham." data-ru="Каждый иностранец, работающий по патенту, ОБЯЗАН в течение 2 МЕСЯЦЕВ со дня выдачи патента подать в МВД уведомление о трудовом (или ГПХ) договоре. Если не подать — патент аннулируется автоматически, даже если платежи вносились вовремя." data-tj="Ҳар як хориҷие, ки бо патент кор мекунад, ВОҶИБ аст, ки дар давоми 2 МОҲ аз рӯзи додани патент ба ВКД огоҳинома дар бораи шартномаи меҳнатӣ (ё ГПХ) супорад. Агар насупоред — патент худкор бекор мешавад, ҳатто агар пардохтҳо сари вақт шуда бошанд ҳам.">Patent bo'yicha ishlayotgan har bir chet ellik, patent BERILGAN kundan boshlab 2 OY ICHIDA, MVD'ga ish shartnomasi (yoki GPX shartnomasi) haqida xabarnoma topshirishi SHART. Bermasangiz — patent avtomatik bekor bo'ladi, garchi to'lovlaringiz vaqtida to'langan bo'lsa ham.</span>
+          </div>
+
+          <div class="sub">
+            <p class="sub-label" data-uz="Bu kimning vazifasi?" data-ru="Чья это обязанность?" data-tj="Ин вазифаи кист?">Bu kimning vazifasi?</p>
+            <p class="hint" data-uz="Ikkita alohida majburiyat bor: ish beruvchi o'z tomonidan 3 ish kuni ichida xabar berishi kerak. LEKIN sizning o'zingiz ham, mustaqil ravishda, 2 oy ichida xabarnoma topshirishingiz shart — ish beruvchiga ishonib, tekshirmasdan qoldirmang." data-ru="Есть две отдельные обязанности: работодатель должен уведомить в течение 3 рабочих дней. НО и вы сами обязаны, независимо, подать уведомление в течение 2 месяцев — не полагайтесь только на работодателя, проверяйте сами." data-tj="Ду ӯҳдадории алоҳида вуҷуд дорад: корфармо бояд дар давоми 3 рӯзи корӣ огоҳ кунад. ЛЕКИН шумо низ худатон, мустақилона, дар давоми 2 моҳ огоҳинома супоридан лозим — фақат ба корфармо такя накунед, худатон санҷед.">Ikkita alohida majburiyat bor: ish beruvchi o'z tomonidan 3 ish kuni ichida xabar berishi kerak. LEKIN sizning o'zingiz ham, mustaqil ravishda, 2 oy ichida xabarnoma topshirishingiz shart — ish beruvchiga ishonib, tekshirmasdan qoldirmang.</p>
+          </div>
+
+          <div class="sub">
+            <p class="sub-label" data-uz="Qanday topshirish kerak" data-ru="Как подать" data-tj="Чӣ тавр супоридан лозим">Qanday topshirish kerak</p>
+            <div class="step"><div class="step-dot">1</div><div class="step-body"><p data-uz="Eng oson yo'l — Gosuslugi: &quot;Yordam&quot; (Помощь) bo'limiga kiring, qidiruvga &quot;уведомление о трудовой деятельности иностранцев&quot; deb yozing" data-ru="Самый простой способ — Госуслуги: зайдите в раздел «Помощь», введите в поиске «уведомление о трудовой деятельности иностранцев»" data-tj="Роҳи осонтарин — Госуслуги: ба бахши «Помощь» ворид шавед, дар ҷустуҷӯ «уведомление о трудовой деятельности иностранцев» нависед">Eng oson yo'l — Gosuslugi: "Yordam" (Помощь) bo'limiga kiring, qidiruvga "уведомление о трудовой деятельности иностранцев" deb yozing</p></div></div>
+            <div class="step"><div class="step-dot">2</div><div class="step-body"><p data-uz="&quot;Подать уведомление&quot; tugmasini bosib, ko'rsatmalarga amal qiling" data-ru="Нажмите «Подать уведомление» и следуйте инструкции" data-tj="Тугмаи «Подать уведомление»-ро пахш карда, дастурро иҷро кунед">"Подать уведомление" tugmasini bosib, ko'rsatmalarga amal qiling</p></div></div>
+            <div class="step"><div class="step-dot">3</div><div class="step-body"><p data-uz="Yoki patentni bergan MVD bo'limiga shaxsan boring — pasport, patent va shartnoma nusxasi bilan" data-ru="Либо лично обратитесь в отделение МВД, выдавшее патент — с паспортом, патентом и копией договора" data-tj="Ё шахсан ба шӯъбаи ВКД, ки патентро додааст, муроҷиат кунед — бо шиноснома, патент ва нусхаи шартнома">Yoki patentni bergan MVD bo'limiga shaxsan boring — pasport, patent va shartnoma nusxasi bilan</p></div></div>
+          </div>
+
+          <div class="mini-notice">
+            <strong style="display:block; margin-bottom:4px;" data-uz="Muhim maslahat" data-ru="Важный совет" data-tj="Маслиҳати муҳим">Muhim maslahat</strong>
+            <span data-uz="Ba'zan Gosuslugi orqali yuborilgan xabarnoma MVD bazasida ko'rinmay qolishi mumkin. Xabarnoma yuborilgani haqida skrinshot/tasdiqnomani saqlab qo'ying. Shubha bo'lsa, qo'shimcha ravishda pochta orqali ham (tavsiyalangan xat, ro'yxat bilan) yuboring." data-ru="Иногда поданное через Госуслуги уведомление может не отразиться в базе МВД. Сохраните скриншот/подтверждение подачи. При сомнении дополнительно отправьте и по почте (заказным письмом с описью)." data-tj="Баъзан огоҳиномаи тавассути Госуслуги супоридашуда дар пойгоҳи ВКД инъикос намеёбад. Скриншот/тасдиқи супоридро нигоҳ доред. Дар сурати шубҳа, иловатан бо почта ҳам (хатифармоишӣ бо рӯйхат) фиристед.">Ba'zan Gosuslugi orqali yuborilgan xabarnoma MVD bazasida ko'rinmay qolishi mumkin. Xabarnoma yuborilgani haqida skrinshot/tasdiqnomani saqlab qo'ying. Shubha bo'lsa, qo'shimcha ravishda pochta orqali ham (tavsiyalangan xat, ro'yxat bilan) yuboring.</span>
+          </div>
+
+          <div class="sub">
+            <p class="sub-label" data-uz="Muddat eslatmasi" data-ru="Напоминание о сроке" data-tj="Ёдоварии мӯҳлат">Muddat eslatmasi</p>
+            <div id="mvd-notify-status" class="reminder-status"></div>
+            <div class="reminder-box">
+              <p style="margin:0 0 10px; font-size:13px; color:var(--ink-soft);" data-uz="Patentingiz qaysi sanada berilgan? (biz avtomatik 2 oylik muddatni hisoblab, eslataveramiz)" data-ru="Когда был выдан ваш патент? (мы автоматически рассчитаем 2-месячный срок и будем напоминать)" data-tj="Патенти шумо кай дода шудааст? (мо мӯҳлати 2-моҳаро худкор ҳисоб карда, ёдоварӣ мекунем)">Patentingiz qaysi sanada berilgan? (biz avtomatik 2 oylik muddatni hisoblab, eslataveramiz)</p>
+              <input type="date" id="mvd-notify-date-input">
+              <button id="mvd-notify-save-btn" data-uz="Saqlash" data-ru="Сохранить" data-tj="Захира кардан">Saqlash</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="fn-item" id="fn-info">
+      <div class="fn-head">
+        <div class="fn-icon"><svg viewBox="0 0 24 24" fill="none"><path d="M12 16v-4M12 8h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.8"/></svg></div>
+        <div class="fn-title">
+          <span class="t1" data-uz="Qo'shimcha ma'lumot" data-ru="Дополнительная информация" data-tj="Маълумоти иловагӣ">Qo'shimcha ma'lumot</span>
+          <span class="t2" data-uz="Favqulodda raqamlar, elchixonalar va boshqa foydali ma'lumot" data-ru="Экстренные номера, посольства и другая полезная информация" data-tj="Рақамҳои фавқулодда, сафоратхонаҳо ва дигар маълумоти муфид">Favqulodda raqamlar, elchixonalar va boshqa foydali ma'lumot</span>
+        </div>
+        <svg class="fn-chevron" viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      </div>
+      <div class="fn-body">
+        <div class="fn-body-inner">
+
+          <div class="sub">
+            <p class="sub-label" data-uz="Favqulodda raqamlar" data-ru="Экстренные номера" data-tj="Рақамҳои фавқулодда">Favqulodda raqamlar</p>
+            <div class="step"><div class="step-dot" style="width:34px; font-size:10.5px;">112</div><div class="step-body"><p data-uz="Yagona favqulodda xizmat (barcha holatlar uchun, telefon balansi/simkartasiz ham ishlaydi)" data-ru="Единая служба экстренной помощи (работает даже без баланса/SIM-карты)" data-tj="Хидмати ягонаи фавқулодда (ҳатто бе баланс/SIM кор мекунад)">Yagona favqulodda xizmat (barcha holatlar uchun, telefon balansi/simkartasiz ham ishlaydi)</p></div></div>
+            <div class="step"><div class="step-dot" style="width:34px; font-size:10.5px;">102</div><div class="step-body"><p data-uz="Politsiya" data-ru="Полиция" data-tj="Полис">Politsiya</p></div></div>
+            <div class="step"><div class="step-dot" style="width:34px; font-size:10.5px;">103</div><div class="step-body"><p data-uz="Tez yordam" data-ru="Скорая помощь" data-tj="Ёрии таъҷилӣ">Tez yordam</p></div></div>
+            <div class="step"><div class="step-dot" style="width:34px; font-size:10.5px;">101</div><div class="step-body"><p data-uz="Yong'in xizmati" data-ru="Пожарная служба" data-tj="Хидмати сӯхторхомӯшкунӣ">Yong'in xizmati</p></div></div>
+          </div>
+
+          <div class="sub">
+            <p class="sub-label" data-uz="Elchixona / konsullik aloqalari" data-ru="Контакты посольства / консульства" data-tj="Тамосҳои сафорат / консулгарӣ">Elchixona / konsullik aloqalari</p>
+
+            <p class="embassy-group">🇺🇿 O'ZBEKISTON</p>
+
+            <div class="link-card">
+              <div class="site" data-uz="Elchixona, Moskva" data-ru="Посольство, Москва" data-tj="Сафорат, Маскав">Elchixona, Moskva</div>
+              <div class="name" data-uz="119017, Moskva, Pogorelskiy pereulok, 12 (metro Polyanka / Dobryninskaya)" data-ru="119017, Москва, Погорельский переулок, д. 12 (метро Полянка / Добрынинская)" data-tj="119017, Маскав, Пер. Погорелский, х. 12 (метро Полянка / Добрынинская)">119017, Moskva, Pogorelskiy pereulok, 12 (metro Polyanka / Dobryninskaya)</div>
+              <p class="hint" style="margin-top:-4px;">+7 (499) 230-00-78 · info@uzembassy.ru</p>
+              <div class="link-actions">
+                <a href="tel:+74992300078">📞 <span data-uz="Qo'ng'iroq" data-ru="Позвонить" data-tj="Занг задан">Qo'ng'iroq</span></a>
+                <a class="map-btn" href="https://yandex.ru/maps/?text=Москва%20Погорельский%20переулок%2012" target="_blank" rel="noopener">🗺️ <span data-uz="Xaritada" data-ru="На карте" data-tj="Дар харита">Xaritada</span></a>
+              </div>
+            </div>
+
+            <div class="link-card">
+              <div class="site" data-uz="Konsullik bo'limi, Moskva" data-ru="Консульский отдел, Москва" data-tj="Шӯъбаи консулгарӣ, Маскав">Konsullik bo'limi, Moskva</div>
+              <div class="name" data-uz="119017, Moskva, 2-y Kazachiy pereulok, 2" data-ru="119017, Москва, 2-й Казачий переулок, д. 2" data-tj="119017, Маскав, Пер. 2-й Казачий, х. 2">119017, Moskva, 2-y Kazachiy pereulok, 2</div>
+              <p class="hint" style="margin-top:-4px;" data-uz="Call-center (pasport, viza, ma'lumotnomalar): +7 (499) 230-00-76, +7 (499) 238-36-20" data-ru="Колл-центр (паспорт, виза, справки): +7 (499) 230-00-76, +7 (499) 238-36-20" data-tj="Маркази занг (шиноснома, виза, маълумотнома): +7 (499) 230-00-76, +7 (499) 238-36-20">Call-center (pasport, viza, ma'lumotnomalar): +7 (499) 230-00-76, +7 (499) 238-36-20</p>
+              <div class="link-actions">
+                <a href="tel:+74992300076">📞 <span data-uz="Qo'ng'iroq" data-ru="Позвонить" data-tj="Занг задан">Qo'ng'iroq</span></a>
+                <a class="map-btn" href="https://yandex.ru/maps/?text=Москва%202-й%20Казачий%20переулок%202" target="_blank" rel="noopener">🗺️ <span data-uz="Xaritada" data-ru="На карте" data-tj="Дар харита">Xaritada</span></a>
+              </div>
+            </div>
+
+            <div class="link-card">
+              <div class="site" data-uz="Bosh konsullik, Novosibirsk" data-ru="Генконсульство, Новосибирск" data-tj="Консулгарии Генералӣ, Новосибирск">Bosh konsullik, Novosibirsk</div>
+              <div class="name" data-uz="630005, Novosibirsk, ul. Semyi Shamshinykh, 30" data-ru="630005, г. Новосибирск, ул. Семьи Шамшиных, д. 30" data-tj="630005, Новосибирск, кӯч. Семьи Шамшиных, х. 30">630005, Novosibirsk, ul. Semyi Shamshinykh, 30</div>
+              <p class="hint" style="margin-top:-4px;">+7 (383) 246-04-85, 246-04-63, 246-04-62</p>
+              <div class="link-actions">
+                <a href="tel:+73832460485">📞 <span data-uz="Qo'ng'iroq" data-ru="Позвонить" data-tj="Занг задан">Qo'ng'iroq</span></a>
+                <a class="map-btn" href="https://yandex.ru/maps/?text=Новосибирск%20улица%20Семьи%20Шамшиных%2030" target="_blank" rel="noopener">🗺️ <span data-uz="Xaritada" data-ru="На карте" data-tj="Дар харита">Xaritada</span></a>
+              </div>
+            </div>
+
+            <p class="hint" data-uz="Sankt-Peterburg va Qozon shaharlarida ham Bosh konsulliklar bor, lekin aniq manzil o'zgarib turishi mumkin — yuqoridagi call-center orqali so'rang." data-ru="Генконсульства также есть в Санкт-Петербурге и Казани, но точный адрес может меняться — уточняйте по колл-центру выше." data-tj="Консулгариҳои Генералӣ инчунин дар Санкт-Петербург ва Қозон мавҷуданд, лекин суроғаи дақиқ тағйир ёфта метавонад — тавассути маркази занги дар боло пурсед.">Sankt-Peterburg va Qozon shaharlarida ham Bosh konsulliklar bor, lekin aniq manzil o'zgarib turishi mumkin — yuqoridagi call-center orqali so'rang.</p>
+
+            <p class="embassy-group">🇹🇯 TOJIKISTON</p>
+
+            <div class="link-card">
+              <div class="site" data-uz="Bosh konsullik, Moskva" data-ru="Генконсульство, Москва" data-tj="Консулгарии Генералӣ, Маскав">Bosh konsullik, Moskva</div>
+              <div class="name" data-uz="121069, Moskva, Skatertniy pereulok, 19" data-ru="121069, Москва, Скатертный переулок, д. 19" data-tj="121069, Маскав, Пер. Скатертный, х. 19">121069, Moskva, Skatertniy pereulok, 19</div>
+              <p class="hint" style="margin-top:-4px;">+7 (495) 690-57-36 · +7 (985) 740-02-12 · consulate.moscow@mfa.tj</p>
+              <div class="link-actions">
+                <a href="tel:+74956905736">📞 <span data-uz="Qo'ng'iroq" data-ru="Позвонить" data-tj="Занг задан">Qo'ng'iroq</span></a>
+                <a class="map-btn" href="https://yandex.ru/maps/?text=Москва%20Скатертный%20переулок%2019" target="_blank" rel="noopener">🗺️ <span data-uz="Xaritada" data-ru="На карте" data-tj="Дар харита">Xaritada</span></a>
+              </div>
+            </div>
+
+            <div class="link-card">
+              <div class="site" data-uz="Bosh konsullik, Sankt-Peterburg" data-ru="Генконсульство, Санкт-Петербург" data-tj="Консулгарии Генералӣ, Санкт-Петербург">Bosh konsullik, Sankt-Peterburg</div>
+              <div class="name" data-uz="192007, Sankt-Peterburg, Tambovskaya ko'chasi, 10А" data-ru="192007, Санкт-Петербург, ул. Тамбовская, д. 10А" data-tj="192007, Санкт-Петербург, кӯч. Тамбовская, х. 10А">192007, Sankt-Peterburg, Tambovskaya ko'chasi, 10А</div>
+              <div class="link-actions">
+                <a class="map-btn" href="https://yandex.ru/maps/?text=Санкт-Петербург%20улица%20Тамбовская%2010А" target="_blank" rel="noopener">🗺️ <span data-uz="Xaritada" data-ru="На карте" data-tj="Дар харита">Xaritada</span></a>
+              </div>
+            </div>
+
+            <div class="link-card">
+              <div class="site" data-uz="Bosh konsullik, Novosibirsk" data-ru="Генконсульство, Новосибирск" data-tj="Консулгарии Генералӣ, Новосибирск">Bosh konsullik, Novosibirsk</div>
+              <div class="name" data-uz="630102, Novosibirsk, ul. Nizhegorodskaya, 4" data-ru="630102, г. Новосибирск, ул. Нижегородская, д. 4" data-tj="630102, Новосибирск, кӯч. Нижегородская, х. 4">630102, Novosibirsk, ul. Nizhegorodskaya, 4</div>
+              <div class="link-actions">
+                <a class="map-btn" href="https://yandex.ru/maps/?text=Новосибирск%20улица%20Нижегородская%204" target="_blank" rel="noopener">🗺️ <span data-uz="Xaritada" data-ru="На карте" data-tj="Дар харита">Xaritada</span></a>
+              </div>
+            </div>
+          </div>
+
+          <div class="sub">
+            <p class="sub-label" data-uz="Migratsiya hisobi holatini bilish" data-ru="Узнать статус миграционного учёта" data-tj="Донистани ҳолати ба қайдгирии муҳоҷират">Migratsiya hisobi holatini bilish</p>
+            <p class="hint" data-uz="Ro'yxatdan o'tganingizni tasdiqlash uchun ochiq qidiruv xizmati yo'q — Gosuslugi shaxsiy kabinetingizga kiring (tasdiqlangan akkaunt bilan), yoki shubha bo'lsa, uni rasmiylashtirgan MFC/MVD bo'limiga murojaat qiling." data-ru="Открытого сервиса проверки нет — войдите в личный кабинет на Госуслугах (с подтверждённой записью), либо при сомнении обратитесь в МФЦ/МВД, где оформляли регистрацию." data-tj="Хидмати кушоди санҷиш вуҷуд надорад — ба кабинети шахсии Госуслуги ворид шавед (бо ҳисоби тасдиқшуда), ё дар сурати шубҳа ба МФЦ/ВКД, ки дар он ҷо қайд кардаед, муроҷиат кунед.">Ro'yxatdan o'tganingizni tasdiqlash uchun ochiq qidiruv xizmati yo'q — Gosuslugi shaxsiy kabinetingizga kiring (tasdiqlangan akkaunt bilan), yoki shubha bo'lsa, uni rasmiylashtirgan MFC/MVD bo'limiga murojaat qiling.</p>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <footer data-uz="Bu ilova faqat ma'lumot va yo'l-yo'riq maqsadida tuzilgan. Rasmiy davlat organi emas va shaxsiy ma'lumotlaringizni saqlamaydi." data-ru="Это приложение создано только в информационно-справочных целях. Не является государственным органом и не хранит ваши персональные данные." data-tj="Ин замима танҳо бо мақсади иттилоотӣ ва роҳнамоӣ сохта шудааст. Мақоми расмии давлатӣ нест ва маълумоти шахсии шуморо нигоҳ намедорад.">Bu ilova faqat ma'lumot va yo'l-yo'riq maqsadida tuzilgan. Rasmiy davlat organi emas va shaxsiy ma'lumotlaringizni saqlamaydi.</footer>
+  </main>
+</div>
+
+<script>
+  // Theme (light/dark)
+  (function(){
+    const THEME_KEY = 'rkl-theme';
+    const btn = document.getElementById('theme-toggle-btn');
+    const saved = localStorage.getItem(THEME_KEY);
+    if(saved === 'dark'){
+      document.documentElement.setAttribute('data-theme', 'dark');
+    }
+    btn.addEventListener('click', ()=>{
+      const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+      if(isDark){
+        document.documentElement.removeAttribute('data-theme');
+        localStorage.setItem(THEME_KEY, 'light');
+      } else {
+        document.documentElement.setAttribute('data-theme', 'dark');
+        localStorage.setItem(THEME_KEY, 'dark');
+      }
+    });
+  })();
+
+  const btnUz = document.getElementById('btn-uz');
+  const btnRu = document.getElementById('btn-ru');
+  const btnTj = document.getElementById('btn-tj');
+  function setLang(lang){
+    document.querySelectorAll('[data-uz]').forEach(el=>{ el.textContent = el.getAttribute('data-' + lang) || el.getAttribute('data-uz'); });
+    btnUz.classList.toggle('active', lang==='uz');
+    btnRu.classList.toggle('active', lang==='ru');
+    btnTj.classList.toggle('active', lang==='tj');
+    document.documentElement.lang = lang;
+  }
+  btnUz.addEventListener('click', ()=>setLang('uz'));
+  btnRu.addEventListener('click', ()=>setLang('ru'));
+  btnTj.addEventListener('click', ()=>setLang('tj'));
+
+  // top-level function accordion (only one open at a time)
+  document.querySelectorAll('.fn-head').forEach(head=>{
+    head.addEventListener('click', ()=>{
+      const item = head.parentElement;
+      const body = item.querySelector('.fn-body');
+      const wasOpen = item.classList.contains('open');
+      document.querySelectorAll('.fn-item').forEach(i=>{
+        i.classList.remove('open');
+        i.querySelector('.fn-body').style.maxHeight = null;
+      });
+      if(!wasOpen){
+        item.classList.add('open');
+        body.style.maxHeight = body.scrollHeight + 'px';
+      }
+    });
+  });
+  window.addEventListener('load', ()=>{
+    const openItem = document.querySelector('.fn-item.open .fn-body');
+    if(openItem) openItem.style.maxHeight = openItem.scrollHeight + 'px';
+  });
+
+  // nested FAQ mini-accordion
+  document.querySelectorAll('.faq-q').forEach(q=>{
+    q.addEventListener('click', (e)=>{
+      e.stopPropagation();
+      const item = q.parentElement;
+      const ans = item.querySelector('.faq-a');
+      const wasOpen = item.classList.contains('open');
+      item.parentElement.querySelectorAll('.faq-item').forEach(i=>{
+        i.classList.remove('open');
+        i.querySelector('.faq-a').style.maxHeight = null;
+      });
+      if(!wasOpen){
+        item.classList.add('open');
+        ans.style.maxHeight = ans.scrollHeight + 'px';
+        // grow parent fn-body too
+        const fnBody = item.closest('.fn-body');
+        if(fnBody) setTimeout(()=>{ fnBody.style.maxHeight = fnBody.scrollHeight + 'px'; }, 210);
+      }
+    });
+  });
+
+  // chip nav
+  document.querySelectorAll('.chip').forEach(chip=>{
+    chip.addEventListener('click', ()=>{
+      const target = document.getElementById(chip.dataset.target);
+      if(!target) return;
+      const body = target.querySelector('.fn-body');
+      document.querySelectorAll('.fn-item').forEach(i=>{
+        i.classList.remove('open');
+        i.querySelector('.fn-body').style.maxHeight = null;
+      });
+      target.classList.add('open');
+      body.style.maxHeight = body.scrollHeight + 'px';
+      target.scrollIntoView({behavior:'smooth', block:'start'});
+    });
+  });
+
+  let deferredPrompt;
+  const installBar = document.getElementById('install-bar');
+  const installBtn = document.getElementById('install-btn');
+  window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferredPrompt = e;
+    installBar.style.display = 'flex';
+  });
+  installBtn.addEventListener('click', async () => {
+    if(!deferredPrompt) return;
+    deferredPrompt.prompt();
+    await deferredPrompt.userChoice;
+    deferredPrompt = null;
+    installBar.style.display = 'none';
+  });
+
+  if('serviceWorker' in navigator){
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('service-worker.js').catch(()=>{});
+    });
+  }
+
+  // Patent expiry reminder
+  (function(){
+    const STORAGE_KEY = 'rkl-patent-due-date';
+    const input = document.getElementById('patent-date-input');
+    const saveBtn = document.getElementById('patent-save-btn');
+    const statusBox = document.getElementById('reminder-status');
+    const currentLang = () => {
+      const l = document.documentElement.lang;
+      return (l === 'ru' || l === 'tj') ? l : 'uz';
+    };
+
+    function daysBetween(a, b){
+      const MS = 1000*60*60*24;
+      return Math.round((b - a) / MS);
+    }
+
+    function render(){
+      const saved = localStorage.getItem(STORAGE_KEY);
+      statusBox.className = 'reminder-status';
+      statusBox.innerHTML = '';
+      if(!saved){ return; }
+      input.value = saved;
+      const dueDate = new Date(saved + 'T00:00:00');
+      const today = new Date(); today.setHours(0,0,0,0);
+      const diff = daysBetween(today, dueDate);
+      const lang = currentLang();
+      let cls, text;
+      if(diff < 0){
+        cls = 'bad';
+        text = lang==='ru'
+          ? `Срок истёк ${Math.abs(diff)} дн. назад! Оплатите патент как можно скорее.`
+          : lang==='tj'
+          ? `Мӯҳлат ${Math.abs(diff)} рӯз пеш гузашт! Патентро ҳарчи зудтар пардохт кунед.`
+          : `Muddat ${Math.abs(diff)} kun oldin tugagan! Patentni imkon qadar tezroq to'lang.`;
+      } else if(diff <= 7){
+        cls = 'warn';
+        text = lang==='ru'
+          ? `Осталось ${diff} дн. до окончания срока — пора оплатить патент.`
+          : lang==='tj'
+          ? `То анҷоми мӯҳлат ${diff} рӯз монд — вақти пардохти патент расид.`
+          : `Muddat tugashiga ${diff} kun qoldi — patentni to'lash vaqti keldi.`;
+      } else {
+        cls = 'ok';
+        text = lang==='ru'
+          ? `Патент действует ещё ${diff} дн. (до ${saved}).`
+          : lang==='tj'
+          ? `Патент боз ${diff} рӯз амал мекунад (то ${saved}).`
+          : `Patent yana ${diff} kun amal qiladi (${saved} gacha).`;
+      }
+      statusBox.classList.add(cls);
+      const p = document.createElement('div');
+      p.textContent = text;
+      statusBox.appendChild(p);
+      const clear = document.createElement('span');
+      clear.className = 'clear-link';
+      clear.textContent = lang==='ru' ? 'Удалить дату' : lang==='tj' ? 'Санаро нест кардан' : 'Sanani o\'chirish';
+      clear.addEventListener('click', ()=>{
+        localStorage.removeItem(STORAGE_KEY);
+        input.value = '';
+        render();
+      });
+      statusBox.appendChild(clear);
+    }
+
+    saveBtn.addEventListener('click', ()=>{
+      if(!input.value) return;
+      localStorage.setItem(STORAGE_KEY, input.value);
+      render();
+    });
+
+    btnUz.addEventListener('click', render);
+    btnRu.addEventListener('click', render);
+    btnTj.addEventListener('click', render);
+    window.addEventListener('load', render);
+  })();
+
+  // MVD employment-notification deadline reminder (patent issue date + 2 months)
+  (function(){
+    const STORAGE_KEY = 'rkl-mvd-notify-patent-date';
+    const input = document.getElementById('mvd-notify-date-input');
+    const saveBtn = document.getElementById('mvd-notify-save-btn');
+    const statusBox = document.getElementById('mvd-notify-status');
+    const currentLang = () => {
+      const l = document.documentElement.lang;
+      return (l === 'ru' || l === 'tj') ? l : 'uz';
+    };
+
+    function daysBetween(a, b){
+      const MS = 1000*60*60*24;
+      return Math.round((b - a) / MS);
+    }
+
+    function addTwoMonths(dateStr){
+      const d = new Date(dateStr + 'T00:00:00');
+      d.setMonth(d.getMonth() + 2);
+      return d;
+    }
+
+    function fmt(d){
+      const y = d.getFullYear();
+      const m = String(d.getMonth()+1).padStart(2,'0');
+      const day = String(d.getDate()).padStart(2,'0');
+      return `${y}-${m}-${day}`;
+    }
+
+    function render(){
+      const saved = localStorage.getItem(STORAGE_KEY);
+      statusBox.className = 'reminder-status';
+      statusBox.innerHTML = '';
+      if(!saved){ return; }
+      input.value = saved;
+      const deadline = addTwoMonths(saved);
+      const deadlineStr = fmt(deadline);
+      const today = new Date(); today.setHours(0,0,0,0);
+      const diff = daysBetween(today, deadline);
+      const lang = currentLang();
+      let cls, text;
+      if(diff < 0){
+        cls = 'bad';
+        text = lang==='ru'
+          ? `Срок подачи уведомления истёк ${Math.abs(diff)} дн. назад (был до ${deadlineStr})! Патент может быть аннулирован — подайте немедленно.`
+          : lang==='tj'
+          ? `Мӯҳлати супоридани огоҳинома ${Math.abs(diff)} рӯз пеш гузашт (то ${deadlineStr} буд)! Патент бекор шуда метавонад — фавран супоред.`
+          : `Xabarnoma topshirish muddati ${Math.abs(diff)} kun oldin tugagan (${deadlineStr} gacha edi)! Patent bekor bo'lishi mumkin — zudlik bilan topshiring.`;
+      } else if(diff <= 14){
+        cls = 'warn';
+        text = lang==='ru'
+          ? `Осталось ${diff} дн. до крайнего срока подачи уведомления (до ${deadlineStr}) — подайте как можно скорее.`
+          : lang==='tj'
+          ? `То мӯҳлати ниҳоии супоридани огоҳинома ${diff} рӯз монд (то ${deadlineStr}) — ҳарчи зудтар супоред.`
+          : `Xabarnoma topshirish muddatiga ${diff} kun qoldi (${deadlineStr} gacha) — imkon qadar tezroq topshiring.`;
+      } else {
+        cls = 'ok';
+        text = lang==='ru'
+          ? `До крайнего срока подачи уведомления ещё ${diff} дн. (до ${deadlineStr}).`
+          : lang==='tj'
+          ? `То мӯҳлати ниҳоии супоридан боз ${diff} рӯз мондааст (то ${deadlineStr}).`
+          : `Xabarnoma topshirish muddatiga yana ${diff} kun bor (${deadlineStr} gacha).`;
+      }
+      statusBox.classList.add(cls);
+      const p = document.createElement('div');
+      p.textContent = text;
+      statusBox.appendChild(p);
+      const clear = document.createElement('span');
+      clear.className = 'clear-link';
+      clear.textContent = lang==='ru' ? 'Удалить дату' : lang==='tj' ? 'Санаро нест кардан' : 'Sanani o\'chirish';
+      clear.addEventListener('click', ()=>{
+        localStorage.removeItem(STORAGE_KEY);
+        input.value = '';
+        render();
+      });
+      statusBox.appendChild(clear);
+    }
+
+    saveBtn.addEventListener('click', ()=>{
+      if(!input.value) return;
+      localStorage.setItem(STORAGE_KEY, input.value);
+      render();
+    });
+
+    btnUz.addEventListener('click', render);
+    btnRu.addEventListener('click', render);
+    btnTj.addEventListener('click', render);
+    window.addEventListener('load', render);
+  })();
+</script>
+
+</body>
+</html>
