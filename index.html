@@ -5,314 +5,107 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>RKL tekshirish</title>
     <style>
-        :root {
-            --bg-color: #121212;
-            --card-bg: #1e1e1e;
-            --text-color: #e0e0e0;
-            --text-muted: #aaaaaa;
-            --border-color: #333333;
-            --primary-color: #007bff;
-            --success-color: #28a745;
-            --accent-orange: #d35400;
-        }
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            margin: 0;
-            padding: 0;
-        }
-        header {
-            padding: 15px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            border-bottom: 1px solid var(--border-color);
-        }
-        .logo-area {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        .logo-badge {
-            background: #d35400;
-            color: white;
-            padding: 3px 6px;
-            border-radius: 4px;
-            font-size: 12px;
-            font-weight: bold;
-        }
-        .lang-switch {
-            display: flex;
-            gap: 5px;
-        }
-        .lang-btn {
-            background: transparent;
-            border: none;
-            color: var(--text-muted);
-            padding: 5px 10px;
-            cursor: pointer;
-            font-weight: bold;
-        }
-        .lang-btn.active {
-            background: var(--accent-orange);
-            color: white;
-            border-radius: 4px;
-        }
-        .container {
-            padding: 15px;
-            max-width: 600px;
-            margin: 0 auto;
-        }
-        .top-nav {
-            display: flex;
-            gap: 10px;
-            overflow-x: auto;
-            padding-bottom: 15px;
-            margin-bottom: 15px;
-        }
-        .top-nav-btn {
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
-            color: var(--text-color);
-            padding: 8px 16px;
-            border-radius: 20px;
-            white-space: nowrap;
-            font-size: 14px;
-            cursor: pointer;
-        }
-        .accordion-item {
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            margin-bottom: 12px;
-            overflow: hidden;
-        }
-        .accordion-header {
-            padding: 18px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            cursor: pointer;
-        }
-        .accordion-title-block {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-        .accordion-icon {
-            font-size: 20px;
-            color: var(--text-muted);
-        }
-        .accordion-text h3 {
-            margin: 0;
-            font-size: 16px;
-        }
-        .accordion-text p {
-            margin: 4px 0 0 0;
-            font-size: 13px;
-            color: var(--text-muted);
-        }
-        .arrow {
-            transition: transform 0.2s;
-            color: var(--text-muted);
-        }
-        .accordion-content {
-            display: none;
-            padding: 15px;
-            border-top: 1px solid var(--border-color);
-            font-size: 14px;
-            background: #171717;
-        }
-        .accordion-item.active .accordion-content {
-            display: block;
-        }
-        .accordion-item.active .arrow {
-            transform: rotate(180deg);
-        }
-        .btn-link {
-            display: inline-block;
-            background: var(--primary-color);
-            color: white;
-            text-decoration: none;
-            padding: 10px 16px;
-            border-radius: 6px;
-            margin-top: 10px;
-            font-weight: bold;
-        }
-        .footer-text {
-            text-align: center;
-            font-size: 12px;
-            color: var(--text-muted);
-            margin-top: 30px;
-            padding: 0 10px;
-        }
-
-        /* AI Chatbot dizayni */
-        #ai-chat-container {
-            position: fixed;
-            bottom: 25px;
-            right: 20px;
-            z-index: 10000;
-        }
-        #open-ai-chat {
-            background: #28a745;
-            color: white;
-            border: none;
-            padding: 14px 22px;
-            border-radius: 50px;
-            cursor: pointer;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.4);
-            font-weight: bold;
-            font-size: 15px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            transition: transform 0.2s;
-        }
-        #open-ai-chat:hover { transform: scale(1.05); }
-        #ai-chat-window {
-            display: none;
-            width: 330px;
-            height: 440px;
-            background: #1e1e1e;
-            border-radius: 14px;
-            box-shadow: 0 5px 25px rgba(0,0,0,0.5);
-            border: 1px solid #333;
-            flex-direction: column;
-            overflow: hidden;
-        }
-        .ai-chat-header {
-            background: #28a745;
-            color: white;
-            padding: 14px;
-            font-weight: bold;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        #close-ai-chat {
-            background: none;
-            border: none;
-            color: white;
-            font-size: 22px;
-            cursor: pointer;
-        }
-        #ai-messages {
-            flex: 1;
-            padding: 12px;
-            overflow-y: auto;
-            font-size: 14px;
-            background: #121212;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-        .msg {
-            padding: 10px 14px;
-            border-radius: 12px;
-            max-width: 80%;
-            word-wrap: break-word;
-            line-height: 1.4;
-        }
-        .msg.user {
-            background: #007bff;
-            color: white;
-            margin-left: auto;
-            border-bottom-right-radius: 2px;
-        }
-        .msg.ai {
-            background: #2a2a2a;
-            color: #e0e0e0;
-            margin-right: auto;
-            border-bottom-left-radius: 2px;
-        }
-        .ai-chat-input-area {
-            display: flex;
-            border-top: 1px solid #333;
-            padding: 8px;
-            background: #1e1e1e;
-        }
-        #ai-user-input {
-            flex: 1;
-            border: 1px solid #444;
-            background: #121212;
-            color: white;
-            padding: 10px;
-            border-radius: 6px;
-            outline: none;
-            font-size: 14px;
-        }
-        #send-ai-btn {
-            background: #28a745;
-            color: white;
-            border: none;
-            padding: 10px 16px;
-            margin-left: 6px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-weight: bold;
-        }
+        :root { --bg: #121212; --card: #1e1e1e; --text: #e0e0e0; --muted: #aaa; --border: #333; --primary: #007bff; --success: #28a745; --orange: #d35400; }
+        body { font-family: sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 0; }
+        header { padding: 15px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border); }
+        .logo-badge { background: var(--orange); color: white; padding: 3px 6px; border-radius: 4px; font-weight: bold; }
+        .lang-btn { background: transparent; border: none; color: var(--muted); padding: 5px 10px; font-weight: bold; cursor: pointer; }
+        .lang-btn.active { background: var(--orange); color: white; border-radius: 4px; }
+        .container { padding: 15px; max-width: 600px; margin: 0 auto; }
+        .top-nav { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 10px; margin-bottom: 15px; }
+        .top-nav-btn { background: var(--card); border: 1px solid var(--border); color: var(--text); padding: 8px 16px; border-radius: 20px; white-space: nowrap; cursor: pointer; }
+        .accordion-item { background: var(--card); border: 1px solid var(--border); border-radius: 12px; margin-bottom: 12px; overflow: hidden; }
+        .accordion-header { padding: 18px; display: flex; align-items: center; justify-content: space-between; cursor: pointer; }
+        .accordion-title-block { display: flex; align-items: center; gap: 15px; }
+        .accordion-text h3 { margin: 0; font-size: 16px; }
+        .accordion-text p { margin: 4px 0 0 0; font-size: 13px; color: var(--muted); }
+        .accordion-content { display: none; padding: 15px; border-top: 1px solid var(--border); background: #171717; font-size: 14px; line-height: 1.6; }
+        .accordion-item.active .accordion-content { display: block; }
+        .btn-link { display: inline-block; background: var(--primary); color: white; text-decoration: none; padding: 10px 16px; border-radius: 6px; margin-top: 10px; font-weight: bold; }
+        .footer-text { text-align: center; font-size: 12px; color: var(--muted); margin-top: 30px; }
+        #ai-chat-container { position: fixed; bottom: 25px; right: 20px; z-index: 10000; }
+        #open-ai-chat { background: var(--success); color: white; border: none; padding: 14px 22px; border-radius: 50px; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.4); font-weight: bold; }
+        #ai-chat-window { display: none; width: 320px; height: 420px; background: #1e1e1e; border-radius: 14px; box-shadow: 0 5px 25px rgba(0,0,0,0.5); border: 1px solid #333; flex-direction: column; overflow: hidden; }
+        .ai-chat-header { background: var(--success); color: white; padding: 12px; font-weight: bold; display: flex; justify-content: space-between; }
+        #ai-messages { flex: 1; padding: 12px; overflow-y: auto; background: #121212; display: flex; flex-direction: column; gap: 10px; font-size: 14px; }
+        .msg { padding: 10px 14px; border-radius: 12px; max-width: 80%; }
+        .msg.user { background: var(--primary); color: white; margin-left: auto; }
+        .msg.ai { background: #2a2a2a; color: #e0e0e0; }
+        .ai-input-area { display: flex; border-top: 1px solid #333; padding: 8px; background: #1e1e1e; }
+        #ai-user-input { flex: 1; border: 1px solid #444; background: #121212; color: white; padding: 10px; border-radius: 6px; outline: none; }
+        #send-ai-btn { background: var(--success); color: white; border: none; padding: 10px 16px; margin-left: 6px; border-radius: 6px; cursor: pointer; font-weight: bold; }
     </style>
 </head>
 <body>
 
     <header>
-        <div class="logo-area">
-            <span class="logo-badge">РФ</span>
-            <strong style="font-size: 18px;">RKL tekshirish</strong>
-        </div>
-        <div class="lang-switch">
-            <button class="lang-btn active">UZ</button>
-            <button class="lang-btn">RU</button>
-            <button class="lang-btn">TJ</button>
-        </div>
+        <div class="logo-area"><span class="logo-badge">РФ</span> <strong style="font-size:18px;margin-left:5px;">RKL tekshirish</strong></div>
+        <div class="lang-switch"><button class="lang-btn active">UZ</button><button class="lang-btn">RU</button><button class="lang-btn">TJ</button></div>
     </header>
 
     <div class="container">
         <div class="top-nav">
-            <button class="top-nav-btn">1. Reestr tekshirish</button>
-            <button class="top-nav-btn">2. Kirish taqig'i</button>
-            <button class="top-nav-btn">3. INN va SNILS</button>
+            <button class="top-nav-btn" onclick="scTo('rkl')">1. Reestr</button>
+            <button class="top-nav-btn" onclick="scTo('taqiq')">2. Taqiq</button>
+            <button class="top-nav-btn" onclick="scTo('inn')">3. INN</button>
+        </div>
+
+        <div id="rkl" class="accordion-item">
+            <div class="accordion-header" onclick="tgAc(this)"><div class="accordion-title-block"><span>🛡️</span><div class="accordion-text"><h3>Reestr tekshirish</h3><p>Nazoratdagi shaxslar reestrida (RKL) borligingizni tekshiring</p></div></div><span>▼</span></div>
+            <div class="accordion-content"><p>Ma'lumotlar MVD rasmiy bazasida saqlanadi. Quyidagi havola orqali ism-familiyangizni kirill harflarida yozib o'zingiz tekshiring.</p><a href="https://мвд.рф/rkl" target="_blank" class="btn-link">мвд.рф/rkl saytiga o'tish →</a></div>
+        </div>
+
+        <div id="taqiq" class="accordion-item">
+            <div class="accordion-header" onclick="tgAc(this)"><div class="accordion-title-block"><span>🚫</span><div class="accordion-text"><h3>Kirish taqig'ini tekshirish</h3><p>Rossiyaga kirishga taqiq qo'yilmaganini tekshiring</p></div></div><span>▼</span></div>
+            <div class="accordion-content"><p>RKL ro'yxatida bo'lmaslik kirish taqig'i umuman yo'qligini anglatmaydi. Pasport seriyasi orqali alohida tekshirib ko'ring.</p><a href="https://мвд.рф" target="_blank" class="btn-link">мвд.рф rasmiy xizmati →</a></div>
+        </div>
+
+        <div id="inn" class="accordion-item">
+            <div class="accordion-header" onclick="tgAc(this)"><div class="accordion-title-block"><span>💳</span><div class="accordion-text"><h3>INN va SNILS</h3><p>Ish uchun kerakli identifikatsiya raqamlari</p></div></div><span>▼</span></div>
+            <div class="accordion-content"><p>Soliq to'lovchi raqamini (INN) bilish yoki shakllantirish uchun pasport ma'lumotlarini kirillchada to'g'ri kiriting.</p><a href="https://nalog.ru" target="_blank" class="btn-link">service.nalog.ru →</a></div>
+        </div>
+
+        <div id="patent" class="accordion-item">
+            <div class="accordion-header" onclick="tgAc(this)"><div class="accordion-title-block"><span>📝</span><div class="accordion-text"><h3>Patent to'lovi</h3><p>Ishlash uchun patentni oylik to'lang</p></div></div><span>▼</span></div>
+            <div class="accordion-content"><p>Patent to'lovlarini muddati o'tishidan oldin onlayn gosuslugi portalida xavfsiz to'lashingiz va cheklarni saqlashingiz mumkin.</p><a href="https://gosuslugi.ru" target="_blank" class="btn-link">gosuslugi.ru sayti →</a></div>
+        </div>
+
+        <div id="huquq" class="accordion-item">
+            <div class="accordion-header" onclick="tgAc(this)"><div class="accordion-title-block"><span>⭐</span><div class="accordion-text"><h3>Mehnat huquqlari</h3><p>Ish haqi to'lanmasa yoki huquq buzilsa, shikoyat qiling</p></div></div><span>▼</span></div>
+            <div class="accordion-content"><p>Oylik maosh kechiksa yoki mehnat shartnomasi tuzilmasa Rostrud mehnat inspeksiyasiga onlayn murojaat qoldiring.</p><a href="https://онлайнинспекция.рф" target="_blank" class="btn-link">онлайнинспекция.рф →</a></div>
+        </div>
+
+        <div id="xabar" class="accordion-item">
+            <div class="accordion-header" onclick="tgAc(this)"><div class="accordion-title-block"><span>📋</span><div class="accordion-text"><h3>Ish joyi haqida MVD'ga xabar berish</h3><p>Patent 2 oyda bekor bo'lib qolmasligi uchun majburiy</p></div></div><span>▼</span></div>
+            <div class="accordion-content"><p>Patent olingan kundan boshlab rosa 2 oy ichida tuzilgan mehnat shartnomasi nusxasini hududiy MVD idorasiga topshirish shart.</p></div>
         </div>
 
         <div class="accordion-item">
-            <div class="accordion-header" onclick="toggleAccordion(this)">
-                <div class="accordion-title-block">
-                    <span class="accordion-icon">🛡️</span>
-                    <div class="accordion-text">
-                        <h3>Reestr tekshirish</h3>
-                        <p>Nazoratdagi shaxslar reestrida (RKL) borligingizni tekshiring</p>
-                    </div>
-                </div>
-                <span class="arrow">▼</span>
-            </div>
-            <div class="accordion-content">
-                <p><strong>Muhim:</strong> Reestr ma'lumotlari faqat MVD ning yopiq davlat bazasida saqlanadi. Bu ilova bazaga to'g'ridan-to'g'ri kira olmaydi — faqat rasmiy manbalarga olib boradi.</p>
-                <a href="https://мвд.рф/rkl" target="_blank" class="btn-link">мвд.рф/rkl saytiga o'tish →</a>
-            </div>
+            <div class="accordion-header" onclick="tgAc(this)"><div class="accordion-title-block"><span>ℹ️</span><div class="accordion-text"><h3>Qo'shimcha ma'lumot</h3><p>Favqulodda chaqiruv raqamlari va foydali elchixonalar</p></div></div><span>▼</span></div>
+            <div class="accordion-content"><p>Rossiyada yagona qutqaruv xizmati raqami: <strong>112</strong><br>O'zbekiston Respublikasi Elchixonasi: +7 (499) 230-00-78</p></div>
         </div>
 
-        <div class="accordion-item">
-            <div class="accordion-header" onclick="toggleAccordion(this)">
-                <div class="accordion-title-block">
-                    <span class="accordion-icon">🚫</span>
-                    <div class="accordion-text">
-                        <h3>Kirish taqig'ini tekshirish</h3>
-                        <p>Rossiyaga kirishga taqiq qo'yilmaganini tekshiring</p>
-                    </div>
-                </div>
-                <span class="arrow">▼</span>
-            </div>
-            <div class="accordion-content">
-                <p>RKL'da bo'lmasligingiz kirish taqig'i yo'qligini kafolatlamaydi — bular ikki xil, mustaqil ro'yxat. Ikkalasini ham alohida tekshiring.</p>
-                <a href="https://мвд.рф" target="_blank" class="btn-link">мвд.рф rasmiy xizmati →</a>
-            </div>
-        </div>
+        <p class="footer-text">Bu ilova faqat ma'lumot berish maqsadida tuzilgan. Rasmiy davlat organi emas.</p>
+    </div>
 
-        <div class="accordion-item">
-            <div class="accordion-header" onclick="toggleAccordion(this)">
-                <div class="accordion-title-block">
-                    <span class="accordion-icon">💳</span>
-                    <div class="accordion-text">
-                        <h3>INN va SNILS</h3>
+    <div id="ai-chat-container">
+        <button id="open-ai-chat">💬 AI Yordamchi</button>
+        <div id="ai-chat-window">
+            <div class="ai-chat-header"><span>RKL AI Maslahatchi</span><button style="background:none;border:none;color:white;font-size:22px;cursor:pointer;" onclick="clCh()">&times;</button></div>
+            <div id="ai-messages"><div class="msg ai">Assalomu alaykum! Rossiya migratsiya qoidalari, patent yoki hujjatlar bo'yicha savolingiz bo'lsa, o'zbek tilida so'rang!</div></div>
+            <div class="ai-input-area"><input type="text" id="ai-user-input" placeholder="Savol yozing..."><button id="send-ai-btn" onclick="hdSn()">OK</button></div>
+        </div>
+    </div>
+
+    <script>
+        function tgAc(el) { el.parentElement.classList.toggle('active'); }
+        function scTo(id) { document.getElementById(id).scrollIntoView({ behavior: 'smooth' }); }
+        function clCh() { document.getElementById('ai-chat-window').style.display = 'none'; document.getElementById('open-ai-chat').style.display = 'block'; }
+        
+        document.getElementById('open-ai-chat').addEventListener('click', () => {
+            document.getElementById('ai-chat-window').style.display = 'flex';
+            document.getElementById('open-ai-chat').style.display = 'none';
+        });
+
+        const _k1 = "QVFOVHh6RkxDOEhvLWZwNnhzZ2ZoNXVjMEtVWE1obThYRFpzc3hFLQ==";
+        const _k2 = "YjFnZzhlYjg1dnEyNWI1Z3U3MGc=";
