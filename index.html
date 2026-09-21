@@ -3,105 +3,166 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RKL tekshirish yordamchisi</title>
+    <title>RKL tekshirish</title>
     <style>
         :root {
+            --bg-color: #121212;
+            --card-bg: #1e1e1e;
+            --text-color: #e0e0e0;
+            --text-muted: #aaaaaa;
+            --border-color: #333333;
             --primary-color: #007bff;
             --success-color: #28a745;
-            --warning-color: #ffc107;
-            --danger-color: #dc3545;
-            --dark-color: #343a40;
-            --light-color: #f8f9fa;
+            --accent-orange: #d35400;
         }
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
             margin: 0;
             padding: 0;
-            background-color: #f4f6f9;
-            color: #333;
-            line-height: 1.6;
         }
         header {
-            background-color: var(--dark-color);
-            color: white;
-            padding: 20px;
-            text-align: center;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            padding: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid var(--border-color);
         }
-        .container {
-            max-width: 800px;
-            margin: 20px auto;
-            padding: 0 15px;
-        }
-        .nav-buttons {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+        .logo-area {
+            display: flex;
+            align-items: center;
             gap: 10px;
-            margin-bottom: 25px;
         }
-        .nav-btn {
-            background-color: white;
-            border: 1px solid #ddd;
-            padding: 12px 8px;
-            border-radius: 8px;
+        .logo-badge {
+            background: #d35400;
+            color: white;
+            padding: 3px 6px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        .lang-switch {
+            display: flex;
+            gap: 5px;
+        }
+        .lang-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            padding: 5px 10px;
             cursor: pointer;
             font-weight: bold;
-            text-align: center;
-            transition: all 0.2s;
-            font-size: 14px;
         }
-        .nav-btn:hover {
-            background-color: var(--primary-color);
+        .lang-btn.active {
+            background: var(--accent-orange);
             color: white;
-            border-color: var(--primary-color);
+            border-radius: 4px;
         }
-        .card {
-            background: white;
-            padding: 20px;
+        .container {
+            padding: 15px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        .top-nav {
+            display: flex;
+            gap: 10px;
+            overflow-x: auto;
+            padding-bottom: 15px;
+            margin-bottom: 15px;
+        }
+        .top-nav-btn {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            color: var(--text-color);
+            padding: 8px 16px;
+            border-radius: 20px;
+            white-space: nowrap;
+            font-size: 14px;
+            cursor: pointer;
+        }
+        .accordion-item {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
             border-radius: 12px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-            margin-bottom: 20px;
+            margin-bottom: 12px;
+            overflow: hidden;
         }
-        h1, h2, h3 {
-            margin-top: 0;
+        .accordion-header {
+            padding: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+        }
+        .accordion-title-block {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .accordion-icon {
+            font-size: 20px;
+            color: var(--text-muted);
+        }
+        .accordion-text h3 {
+            margin: 0;
+            font-size: 16px;
+        }
+        .accordion-text p {
+            margin: 4px 0 0 0;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+        .arrow {
+            transition: transform 0.2s;
+            color: var(--text-muted);
+        }
+        .accordion-content {
+            display: none;
+            padding: 15px;
+            border-top: 1px solid var(--border-color);
+            font-size: 14px;
+            background: #171717;
+        }
+        .accordion-item.active .accordion-content {
+            display: block;
+        }
+        .accordion-item.active .arrow {
+            transform: rotate(180deg);
         }
         .btn-link {
             display: inline-block;
-            background-color: var(--primary-color);
+            background: var(--primary-color);
             color: white;
             text-decoration: none;
-            padding: 10px 20px;
+            padding: 10px 16px;
             border-radius: 6px;
-            font-weight: bold;
             margin-top: 10px;
-        }
-        .btn-link:hover {
-            background-color: #0056b3;
-        }
-        .alert {
-            padding: 12px;
-            border-radius: 6px;
-            margin-bottom: 15px;
             font-weight: bold;
         }
-        .alert-warning { background-color: #fff3cd; color: #856404; }
-        .alert-info { background-color: #d1ecf1; color: #0c5460; }
-        
-        /* AI Chatbot stillari */
+        .footer-text {
+            text-align: center;
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-top: 30px;
+            padding: 0 10px;
+        }
+
+        /* === AI CHATBOT INTEGRATSIYASI (TUGMA VA OYNA) === */
         #ai-chat-container {
             position: fixed;
-            bottom: 20px;
+            bottom: 25px;
             right: 20px;
             z-index: 10000;
         }
         #open-ai-chat {
-            background: #007bff;
+            background: #28a745;
             color: white;
             border: none;
             padding: 14px 22px;
             border-radius: 50px;
             cursor: pointer;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.4);
             font-weight: bold;
             font-size: 15px;
             display: flex;
@@ -112,17 +173,17 @@
         #open-ai-chat:hover { transform: scale(1.05); }
         #ai-chat-window {
             display: none;
-            width: 340px;
-            height: 450px;
-            background: white;
+            width: 330px;
+            height: 440px;
+            background: #1e1e1e;
             border-radius: 14px;
-            box-shadow: 0 5px 25px rgba(0,0,0,0.25);
-            border: 1px solid #e0e0e0;
+            box-shadow: 0 5px 25px rgba(0,0,0,0.5);
+            border: 1px solid #333;
             flex-direction: column;
             overflow: hidden;
         }
         .ai-chat-header {
-            background: #007bff;
+            background: #28a745;
             color: white;
             padding: 14px;
             font-weight: bold;
@@ -142,14 +203,17 @@
             padding: 12px;
             overflow-y: auto;
             font-size: 14px;
-            background: #f8f9fa;
+            background: #121212;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
         }
         .msg {
             padding: 10px 14px;
             border-radius: 12px;
-            margin-bottom: 10px;
             max-width: 80%;
             word-wrap: break-word;
+            line-height: 1.4;
         }
         .msg.user {
             background: #007bff;
@@ -158,19 +222,22 @@
             border-bottom-right-radius: 2px;
         }
         .msg.ai {
-            background: #e9ecef;
-            color: black;
+            background: #2a2a2a;
+            color: #e0e0e0;
+            margin-right: auto;
             border-bottom-left-radius: 2px;
         }
         .ai-chat-input-area {
             display: flex;
-            border-top: 1px solid #eee;
+            border-top: 1px solid #333;
             padding: 8px;
-            background: white;
+            background: #1e1e1e;
         }
         #ai-user-input {
             flex: 1;
-            border: 1px solid #ccc;
+            border: 1px solid #444;
+            background: #121212;
+            color: white;
             padding: 10px;
             border-radius: 6px;
             outline: none;
@@ -191,85 +258,62 @@
 <body>
 
     <header>
-        <h2># RKL tekshirish yordamchisi</h2>
-        <p>Rossiyada bo'lgan chet elliklar uchun 6 ta asosiy funksiya va qo'shimcha ma'lumot.</p>
+        <div class="logo-area">
+            <span class="logo-badge">РФ</span>
+            <strong style="font-size: 18px;">RKL tekshirish</strong>
+        </div>
+        <div class="lang-switch">
+            <button class="lang-btn active">UZ</button>
+            <button class="lang-btn">RU</button>
+            <button class="lang-btn">TJ</button>
+        </div>
     </header>
 
     <div class="container">
-        <!-- Bo'limlar Navigatsiyasi -->
-        <div class="nav-buttons">
-            <div class="nav-btn" onclick="scrollToSection('rkl')">1. Reestr tekshirish</div>
-            <div class="nav-btn" onclick="scrollToSection('taqiq')">2. Kirish taqig'i</div>
-            <div class="nav-btn" onclick="scrollToSection('inn')">3. INN va SNILS</div>
-            <div class="nav-btn" onclick="scrollToSection('patent')">4. Patent to'lovi</div>
-            <div class="nav-btn" onclick="scrollToSection('huquq')">5. Mehnat huquqlari</div>
-            <div class="nav-btn" onclick="scrollToSection('xabar')">6. Ish haqida xabar</div>
+        <!-- Gorizontal Top Navigatsiya -->
+        <div class="top-nav">
+            <button class="top-nav-btn">1. Reestr tekshirish</button>
+            <button class="top-nav-btn">2. Kirish taqig'i</button>
+            <button class="top-nav-btn">3. INN va SNILS</button>
         </div>
 
-        <!-- 1. RKL Reestr tekshirish -->
-        <div id="rkl" class="card">
-            <h3>1. Nazoratdagi shaxslar reestri (RKL)</h3>
-            <div class="alert alert-warning">
-                <strong>Muhim:</strong> Reestr ma'lumotlari faqat MVD ning yopiq davlat bazasida saqlanadi. Bu ilova rasmiy manbalarga yo'llanma beradi.
-            </div>
-            <p><strong>Qanday tekshirish kerak:</strong> Pasport ma'lumotlaringizni to'g'ridan-to'g'ri rasmiy havolalar orqali kirill harflarida (masalan: Жамшидбек) yozib tekshiring.</p>
-            <a href="https://мвд.рф/rkl" target="_blank" class="btn-link">мвд.рф/rkl orqali tekshirish →</a>
-        </div>
-
-        <!-- 2. Kirish taqig'i -->
-        <div id="taqiq" class="card">
-            <h3>2. Rossiyaga kirish taqig'ini tekshirish</h3>
-            <p>RKL ro'yxatida bo'lmasligingiz kirish taqig'i yo'qligini kafolatlamaydi. Quyidagi havola orqali pasport seriyasi va shaxsiy ma'lumotlarni kiritib alohida tekshiring.</p>
-            <a href="https://мвд.рф" target="_blank" class="btn-link">MVD GUVM xizmati →</a>
-        </div>
-
-        <!-- 3. INN va SNILS -->
-        <div id="inn" class="card">
-            <h3>3. INN va SNILS raqamlarini aniqlash</h3>
-            <p>Soliq to'lovchi guvohnomasi (INN) mavjudligini bilish uchun rasmiy Soliq xizmati saytidan foydalaning. Ism-familiyangizni kirillchada kiriting.</p>
-            <a href="https://nalog.ru" target="_blank" class="btn-link">service.nalog.ru/inn.do →</a>
-        </div>
-
-        <!-- 4. Patent to'lovi -->
-        <div id="patent" class="card">
-            <h3>4. Ish uchun patent to'lovi</h3>
-            <p>Patent muddatini o'tkazib yubormaslik uchun Gosuslugi portalidan onlayn to'lov xizmatlaridan foydalanish tavsiya etiladi.</p>
-            <a href="https://gosuslugi.ru" target="_blank" class="btn-link">Gosuslugi Patent to'lovi →</a>
-        </div>
-
-        <!-- 5. Mehnat huquqlari -->
-        <div id="huquq" class="card">
-            <h3>5. Mehnat huquqlari va shikoyat yuborish</h3>
-            <p>Ish beruvchi shartnoma tuzmasa yoki oylik maoshni kechiktirsa, Rostrud mehnat inspeksiyasining rasmiy portaliga onlayn arizangizni qoldiring.</p>
-            <a href="https://онлайнинспекция.рф" target="_blank" class="btn-link">онлайнинспекция.рф →</a>
-        </div>
-
-        <!-- 6. Ish haqida xabar berish -->
-        <div id="xabar" class="card">
-            <h3>6. MVDga ish joyi haqida xabarnoma berish</h3>
-            <div class="alert alert-info">
-                Patent olgan kuningizdan boshlab 2 oy ichida mehnat shartnomasini MVDga topshirishingiz shart, aks holda patent bekor bo'ladi.
-            </div>
-            <p>Buni Gosuslugi ilovasi yoki pochta orqali shaxsan MVD bo'limiga topshirish orqali amalga oshirishingiz mumkin.</p>
-        </div>
-    </div>
-
-    <!-- ================= SUN'IY INTELLEKT CHATBOTI INTERFEYSI ================= -->
-    <div id="ai-chat-container">
-        <!-- Chatni ochish tugmasi -->
-        <button id="open-ai-chat">
-            💬 AI Yordamchi
-        </button>
-
-        <!-- Chat oynasi -->
-        <div id="ai-chat-window">
-            <div class="ai-chat-header">
-                <span>RKL AI Maslahatchi</span>
-                <button id="close-ai-chat">&times;</button>
-            </div>
-            <div id="ai-messages">
-                <div class="msg ai">
-                    Assalomu alaykum! Men RKL integratsiya qilingan aqlli yordamchisiman. Rossiyadagi hujjatlar, patentlar, taqiqlar yoki MVD qoidalari bo'yicha savolingiz bo'lsa, o'zbek tilida bemalol so'rang!
+        <!-- 1-Bo'lim -->
+        <div class="accordion-item">
+            <div class="accordion-header" onclick="toggleAccordion(this)">
+                <div class="accordion-title-block">
+                    <span class="accordion-icon">🛡️</span>
+                    <div class="accordion-text">
+                        <h3>Reestr tekshirish</h3>
+                        <p>Nazoratdagi shaxslar reestrida (RKL) borligingizni tekshiring</p>
+                    </div>
                 </div>
+                <span class="arrow">▼</span>
             </div>
-            <div class="ai-chat-input-area">
+            <div class="accordion-content">
+                <p><strong>Muhim:</strong> Reestr ma'lumotlari faqat MVD ning yopiq davlat bazasida saqlanadi. Bu ilova bazaga to'g'ridan-to'g'ri kira olmaydi — faqat rasmiy manbalarga olib boradi.</p>
+                <a href="https://мвд.рф/rkl" target="_blank" class="btn-link">мвд.рф/rkl saytiga o'tish →</a>
+            </div>
+        </div>
+
+        <!-- 2-Bo'lim -->
+        <div class="accordion-item">
+            <div class="accordion-header" onclick="toggleAccordion(this)">
+                <div class="accordion-title-block">
+                    <span class="accordion-icon">🚫</span>
+                    <div class="accordion-text">
+                        <h3>Kirish taqig'ini tekshirish</h3>
+                        <p>Rossiyaga kirishga taqiq qo'yilmaganini tekshiring</p>
+                    </div>
+                </div>
+                <span class="arrow">▼</span>
+            </div>
+            <div class="accordion-content">
+                <p>RKL'da bo'lmasligingiz kirish taqig'i yo'qligini kafolatlamaydi — bular ikki xil, mustaqil ro'yxat. Ikkalasini ham alohida tekshiring.</p>
+                <a href="https://мвд.рф" target="_blank" class="btn-link">мвд.рф rasmiy xizmati →</a>
+            </div>
+        </div>
+
+        <!-- 3-Bo'lim -->
+        <div class="accordion-item">
+            <div class="accordion-header" onclick="toggleAccordion(this)">
+                <div class="accordion-title-block">
